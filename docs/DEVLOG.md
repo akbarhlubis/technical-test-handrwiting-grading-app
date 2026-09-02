@@ -27,287 +27,254 @@ My approach throughout the assignment is:
 
 ---
 
-# Day 1 — Project Preparation
+# Background
 
-**Date:** September 1, 2026
+My primary production experience is with Laravel, MySQL, JavaScript, and traditional server-rendered web applications.
 
-## Goal
+Because several technologies suggested for this assignment are outside my usual production stack, I decided not to immediately generate the entire application using AI.
 
-Prepare the project workspace and supporting documentation before beginning
-technical research and implementation.
+Instead, I wanted to first understand the responsibilities of each technology, build a mental model of the architecture, and gradually move from research into implementation.
 
-The purpose of this day was not to start coding immediately, but to organize
-the assignment so that the following development days could remain focused.
+AI is used throughout this project as an engineering assistant, but I remain responsible for understanding, reviewing, testing, and accepting the final implementation.
 
 ---
 
-## Activities
+# AI-Assisted Development Approach
 
-- Prepared the local project workspace.
-- Created the initial repository structure.
-- Prepared supporting documentation.
-- Created `PLAN.md`.
-- Created `DEVLOG.md`.
-- Created `DECISIONS.md`.
-- Reviewed the assignment requirements.
-- Identified the expected submission format.
-- Defined an initial high-level development timeline.
-- Prepared the tools that would be used during development.
+I use different tools for different responsibilities.
 
----
+## ChatGPT
 
-## Initial Project Files
-
-The repository was prepared with the following documentation structure:
-
-    README.md
-    PLAN.md
-    DEVLOG.md
-    DECISIONS.md
-
-At this stage, these documents were intentionally lightweight and expected to
-evolve alongside the implementation.
-
----
-
-## Initial Thoughts
-
-My strongest production experience is primarily with Laravel, MySQL,
-JavaScript, and traditional web application development.
-
-The assignment introduces several technologies that are relatively new to my
-usual workflow, particularly Next.js, Supabase, and Gemini-based image
-processing.
-
-Instead of immediately generating an implementation using AI, I decided to
-separate preparation, learning, architecture, implementation, and verification
-into distinct stages.
-
----
-
-## AI Development Strategy
-
-Before implementation begins, I plan to use the tools with different roles:
-
-### ChatGPT
-
-Primary role:
+Primarily used for:
 
 - Requirement analysis
-- Research assistance
+- Technical research assistance
 - Architecture discussion
-- Technical review
+- Comparing unfamiliar concepts with technologies I already understand
+- Planning
+- Reviewing technical approaches
 - Challenging assumptions
 - Security and implementation review
 
-### Codex
+## Codex
 
-Primary role:
+Primarily intended for:
 
-- Implementation
+- Implementation assistance
+- Codebase exploration
 - Refactoring
 - Repetitive development tasks
 - Testing assistance
 - Applying implementation decisions
 
-### My Role
+## My Responsibility
 
-My responsibility remains:
+My responsibility throughout the project remains:
 
 - Understanding the requirements
+- Understanding the architecture
+- Researching unfamiliar technologies
 - Making final engineering decisions
 - Reviewing generated code
-- Testing behavior
+- Testing application behavior
 - Validating implementation
 - Accepting or rejecting proposed solutions
 - Taking responsibility for the final submission
 
----
+The general principle is:
 
-## Development Timeline
-
-### Day 1 — Preparation
-
-Prepare repository, documentation, workspace, and development strategy.
-
-### Day 2 — Research & Architecture
-
-Learn the unfamiliar stack, review tutorials and official documentation,
-and define the initial architecture.
-
-### Day 3 — Foundation & Core Backend
-
-Build the project foundation and prove the core backend and AI pipeline.
-
-### Day 4 — End-to-End Product Flow
-
-Connect the frontend experience with the backend pipeline and complete the
-main student workflow.
-
-### Day 5 — Stabilization & Submission
-
-Focus on testing, security, documentation, deployment verification,
-and final submission.
+> AI-generated code or suggestions are treated as proposals, not automatically
+> accepted solutions.
 
 ---
 
-## End-of-Day Reflection
+# Day 1 — Requirement Understanding & Initial Research
 
-### Completed
-
-- [x] Prepared development workspace
-- [x] Prepared documentation structure
-- [x] Created initial implementation plan
-- [x] Defined AI-assisted development workflow
-- [x] Reviewed assignment scope
-
-### Technical Research Completed
-
-None yet.
-
-Technical research is intentionally scheduled for Day 2.
-
-### Coding Completed
-
-None yet.
-
-### Next Priority
-
-Begin focused research into:
-
-- Next.js architecture
-- Server/client boundaries
-- Supabase integration
-- Gemini image processing
-- Structured AI responses
-- Vercel deployment
-
----
-
-# Day 2 — Research & Architecture
-
-**Date:** September 2, 2026
+**Date:** September 1, 2026
 
 ## Goal
 
-Build enough understanding of the unfamiliar technology stack to make informed
-implementation decisions before writing significant application code.
+Understand the technical assignment, identify the main application workflow,
+explore the proposed technology stack, and prepare a structured development
+process before starting implementation.
 
 ---
 
-## Questions I Want to Answer
+## Activities
 
-### Next.js
+During the first day, I mainly focused on understanding rather than coding.
 
-- How is a modern Next.js application structured?
-- How does the App Router work?
-- What belongs in Server Components?
-- What requires Client Components?
-- How should Route Handlers be used?
-- How should environment variables be handled?
+Activities included:
 
-### Supabase
+- Reviewing the technical assignment and expected deliverables.
+- Reading introductory tutorials and technical references.
+- Discussing the assignment requirements with ChatGPT.
+- Breaking the requirements into smaller technical responsibilities.
+- Exploring possible application architecture.
+- Identifying the main end-to-end workflow.
+- Preparing the local project workspace.
+- Creating the GitHub repository.
+- Preparing development documentation.
+- Creating `README.md`.
+- Creating `PLAN.md`.
+- Creating `DEVLOG.md`.
+- Creating `DECISIONS.md`.
+- Defining an initial development timeline.
+- Recording initial engineering hypotheses before implementation.
 
-- How should a Next.js application communicate with Supabase?
-- What credentials are safe to expose?
-- How should privileged operations be handled?
-- How should image uploads be stored?
-- What database structure fits the assignment?
-
-### Gemini
-
-- How does Gemini accept image input?
-- Can the model return structured JSON?
-- How should the grading prompt be structured?
-- How should invalid AI responses be handled?
-- Should Gemini communication happen server-side?
-
-### Vercel
-
-- How are environment variables configured?
-- Are there serverless limitations relevant to image processing?
-- How should production deployment influence the architecture?
+No significant application implementation was performed during this stage.
 
 ---
 
-## Learning Resources
+## Understanding the Assignment
 
-### Next.js
+After reviewing the requirements, I identified the primary student workflow as:
 
-#### Resource 1
+    Student
+       ↓
+    Select Lesson
+       ↓
+    Capture Handwriting
+       ↓
+    Submit Image
+       ↓
+    Backend Processing
+       ↓
+    AI-Assisted Grading
+       ↓
+    Store Result
+       ↓
+    Return Result
+       ↓
+    Display Score & Corrections
 
-**Title:**  
-...
+This became the initial vertical slice that I wanted to prove before spending
+significant time polishing the interface.
 
-**Type:**  
-YouTube / Official Documentation / Article
-
-**Link:**  
-...
-
-**Why I used it:**
-
-...
-
-**Key takeaway:**
-
-...
-
-**Applied to:**
-
-...
-
----
-
-### Supabase
-
-#### Resource 1
-
-**Title:**  
-...
-
-**Type:**  
-...
-
-**Link:**  
-...
-
-**Why I used it:**
-
-...
-
-**Key takeaway:**
-
-...
+At this stage, however, this was still an architectural hypothesis rather than
+an implemented architecture.
 
 ---
 
-### Gemini
+## Initial Technology Understanding
 
-#### Resource 1
+I spent part of the day reading introductory material about the technologies
+suggested for the assignment.
 
-**Title:**  
-...
+My initial mental model was:
 
-**Type:**  
-...
+    Next.js
+       ↓
+    Application UI + Backend Endpoints
 
-**Link:**  
-...
+    Supabase
+       ↓
+    PostgreSQL + Image Storage
 
-**Why I used it:**
+    Gemini
+       ↓
+    Image Analysis + Grading Assistance
 
-...
+    Vercel
+       ↓
+    Application Deployment
 
-**Key takeaway:**
+This understanding was intentionally kept at a high level.
 
-...
+I expected some of these assumptions to change after deeper research and
+implementation.
 
 ---
 
-## Initial Architecture
+## Understanding Next.js Through Laravel
 
-After completing the initial research, the expected application flow is:
+Because Laravel is the framework I am most familiar with in production, I
+initially tried to understand Next.js by comparing its responsibilities with concepts I already know from Laravel.
+
+This comparison is not intended to imply that Laravel and Next.js have the same architecture.
+
+Laravel commonly follows an MVC-oriented structure, while modern Next.js with the App Router uses file-system routing and React's server/client component model.
+
+The comparison was useful only as a learning bridge.
+
+### My Initial Mental Mapping
+
+| Laravel Concept | Next.js Concept | My Initial Understanding |
+|---|---|---|
+| `routes/web.php` | `app/.../page.tsx` | URL structure can be represented through the filesystem |
+| `routes/api.php` | `app/api/.../route.ts` | Server-side HTTP endpoints can be implemented through Route Handlers |
+| Controller | Route Handler / server-side logic | Handles server-side application operations, although the architecture is different |
+| Blade View | React Component / `page.tsx` | Responsible for rendering the user interface |
+| Blade Layout | `layout.tsx` | Provides shared UI structure across routes |
+| `public/` | `public/` | Static assets |
+| `.env` | `.env.local` | Environment-specific configuration |
+| Middleware | Next.js middleware/proxy-related mechanisms | Request-level processing, depending on the use case |
+
+The important difference I started to recognize was that Next.js does not
+simply reproduce Laravel's MVC structure.
+
+For example, in a traditional Laravel application I am used to thinking about:
+
+    Request
+       ↓
+    Route
+       ↓
+    Controller
+       ↓
+    Model / Service
+       ↓
+    Blade / JSON Response
+
+My initial understanding of the Next.js App Router was closer to:
+
+    URL
+       ↓
+    Filesystem Route
+       ↓
+    Page / Layout
+       ↓
+    Server or Client Component
+
+and for an API/backend operation:
+
+    Client
+       ↓
+    Route Handler
+       ↓
+    Server-Side Logic
+       ↓
+    Database / External Service
+       ↓
+    Response
+
+This comparison helped me stop looking for a direct equivalent of
+`routes/web.php` or a traditional controller for every page.
+
+Instead, I started thinking in terms of route segments, pages, layouts, components, and server-side boundaries.
+
+---
+
+## Initial Questions About Next.js
+
+At this stage I still had several questions:
+
+- How should application logic be organized when there is no traditional
+  Laravel-style controller structure?
+- When should a component run on the server?
+- When is `"use client"` actually necessary?
+- Where should Supabase access live?
+- Where should Gemini communication live?
+- How should Route Handlers be structured?
+- How much business logic should exist inside a Route Handler?
+- What project structure is appropriate without overengineering the assignment?
+
+I intentionally left these questions open rather than asking AI to immediately generate an architecture that I did not yet understand.
+
+---
+
+## Initial Architecture Discussion
+
+With assistance from ChatGPT, I explored an initial architecture:
 
     Student
        ↓
@@ -329,84 +296,504 @@ After completing the initial research, the expected application flow is:
        ↓
     Result & Correction UI
 
----
+The architecture was recorded as an initial direction, not as a final decision.
 
-## Research Findings
-
-### Finding 1
-
-...
-
-### Finding 2
-
-...
-
-### Finding 3
-
-...
+Important decisions were documented separately in `DECISIONS.md` so they could
+later be accepted, rejected, or changed based on research.
 
 ---
 
-## Decisions Influenced by Research
+## Repository & Documentation Preparation
 
-### Decision 1
+Before application implementation, I prepared the repository with:
 
-...
+    README.md
+    PLAN.md
+    DEVLOG.md
+    DECISIONS.md
 
-**Reason:**
+Each document has a different purpose:
 
-...
+### `README.md`
 
-**Related ADR:**
+A concise entry point for the repository and eventually the final submission.
 
-ADR-...
+### `PLAN.md`
+
+Tracks development priorities, timeline, scope, and definition of done.
+
+### `DEVLOG.md`
+
+Records the actual learning and development journey.
+
+### `DECISIONS.md`
+
+Records significant engineering decisions, alternatives, and trade-offs.
+
+The initial documentation was committed and pushed to GitHub before application
+implementation began.
 
 ---
 
-## Things I Still Do Not Fully Understand
+## Use of AI on Day 1
 
-- ...
-- ...
-- ...
+ChatGPT was mainly used to:
 
-These items will be researched just-in-time when they become relevant during
-implementation.
+- Break down the technical assignment.
+- Discuss possible architecture.
+- Compare unfamiliar concepts with my Laravel experience.
+- Identify the highest-risk technical areas.
+- Structure the development plan.
+- Define the initial development workflow.
+- Help prepare the initial documentation.
+
+No significant application implementation was generated during this stage.
 
 ---
 
 ## End-of-Day Reflection
 
-### What I Learned
+### Completed
 
-...
-
-### What Changed From My Initial Assumptions
-
-...
-
-### Architecture Decisions Made
-
-- ...
-- ...
+- [x] Reviewed assignment requirements
+- [x] Read introductory tutorials and references
+- [x] Discussed initial architecture
+- [x] Identified the core application workflow
+- [x] Started building a Next.js mental model
+- [x] Compared Next.js concepts with familiar Laravel concepts
+- [x] Prepared local workspace
+- [x] Created project documentation
+- [x] Created GitHub repository
+- [x] Committed and pushed initial documentation
 
 ### Coding Completed
 
-...
+No application implementation yet.
+
+### Main Learning
+
+The biggest learning from the first day was that I should not try to force the Laravel MVC model directly onto Next.js.
+
+Laravel provided a useful reference point, but Next.js requires thinking more
+in terms of:
+
+    Filesystem Routing
+        +
+    React Components
+        +
+    Server / Client Boundaries
+        +
+    Route Handlers
+
+rather than:
+
+    Route
+        +
+    Controller
+        +
+    Model
+        +
+    View
 
 ### Next Priority
 
-Begin implementation of the project foundation and core backend pipeline.
+Initialize the actual Next.js application and continue validating the mental
+model against the framework itself.
 
 ---
 
-# Day 3 — Foundation & Core Backend
+# Day 2 — Next.js Initialization & Continued Research
+
+**Date:** September 2, 2026
+
+## Goal
+
+Initialize the application using the current Next.js setup and continue building an understanding of the technologies required for the assignment.
+
+---
+
+## Next.js Project Initialization
+
+I initialized Next.js directly inside the existing Git repository rather than
+creating another nested project directory.
+
+The project was initialized using:
+
+    npx create-next-app@latest .
+
+The current `create-next-app` CLI offered recommended defaults.
+
+I chose to stay close to those defaults rather than customizing the framework before I had a reason to do so.
+
+The generated setup included:
+
+- TypeScript
+- ESLint
+- Tailwind CSS
+- App Router
+- `AGENTS.md`
+- No `src/` directory
+- React Compiler disabled
+
+---
+
+## Why I Followed the Framework Defaults
+
+Initially, I considered using a `src/` directory because it provides a familiar
+way to separate application source code from configuration files.
+
+However, the current Next.js recommended setup did not require it.
+
+Since this is a limited-scope technical assignment and I am still learning the framework conventions, I decided not to introduce additional structure simply because it felt familiar.
+
+The principle I wanted to follow was:
+
+> Start with the framework's conventions and introduce additional structure
+> only when the application creates a real need for it.
+
+---
+
+## Generated Project Structure
+
+After initialization, I started examining the generated structure.
+
+My initial focus was on:
+
+    app/
+    ├── globals.css
+    ├── layout.tsx
+    └── page.tsx
+
+along with:
+
+    public/
+    package.json
+    next.config.ts
+    postcss.config.mjs
+    tsconfig.json
+    AGENTS.md
+
+Instead of immediately creating many folders, services, repositories, or other
+abstractions, I wanted to understand the default structure first.
+
+---
+
+## Refining My Next.js Mental Model
+
+Seeing the actual project helped make the routing model clearer.
+
+For example:
+
+    app/page.tsx
+
+represents:
+
+    /
+
+A nested structure such as:
+
+    app/syllabus/page.tsx
+
+would represent:
+
+    /syllabus
+
+and:
+
+    app/results/page.tsx
+
+would represent:
+
+    /results
+
+This is different from how I normally define routes explicitly in Laravel.
+
+### Laravel
+
+For example, I am accustomed to something conceptually similar to:
+
+    Route::get('/results', [ResultController::class, 'index']);
+
+The route definition and the controller implementation are separate concepts.
+
+### Next.js App Router
+
+My current understanding is closer to:
+
+    app/
+    └── results/
+        └── page.tsx
+
+where the filesystem itself participates in defining the route.
+
+This helped clarify what "file-system routing" actually means rather than only
+reading the term in documentation.
+
+---
+
+## Page Rendering vs Backend Endpoints
+
+Another mental distinction I started making was between application pages and backend endpoints.
+
+### Page
+
+Conceptually:
+
+    app/results/page.tsx
+
+represents UI for:
+
+    /results
+
+### Route Handler
+
+Conceptually:
+
+    app/api/submissions/route.ts
+
+could provide an HTTP endpoint such as:
+
+    /api/submissions
+
+This started to give me a Laravel-oriented mental bridge:
+
+    Laravel routes/web.php
+        ↕
+    Next.js page routes
+
+and:
+
+    Laravel routes/api.php + Controller
+        ↕
+    Next.js Route Handler
+
+Again, these are not architectural equivalents, but the comparison helped me
+understand the responsibility of each part.
+
+---
+
+## Server and Client Components
+
+One concept that is more different from my usual Laravel workflow is the Server Component and Client Component boundary.
+
+In Laravel with Blade, I am accustomed to most server-side rendering happening before HTML reaches the browser, while JavaScript is added where browser interaction is needed.
+
+My early understanding of Next.js is that components can also have different execution responsibilities.
+
+For this assignment, I expect browser-specific functionality such as:
+
+- Camera access
+- `getUserMedia`
+- Interactive capture controls
+- Some user interactions
+
+to require client-side behavior.
+
+Meanwhile, operations involving:
+
+- Secret API credentials
+- Gemini
+- Privileged database operations
+- Backend validation
+
+should remain on the server side.
+
+This distinction is especially important for the handwriting submission flow.
+
+I still need to validate the exact implementation patterns as development
+continues.
+
+---
+
+## Tailwind CSS
+
+Tailwind CSS was installed automatically as part of the recommended Next.js
+setup.
+
+I intentionally did not install or configure Tailwind separately after
+initializing the application.
+
+This avoided introducing configuration from potentially outdated tutorials when
+the framework already provided a current setup.
+
+---
+
+## Supabase Research
+
+I also spent some time reading introductory information about Supabase.
+
+My initial understanding is that it can provide two important responsibilities
+for this assignment:
+
+    Supabase
+       │
+       ├── PostgreSQL
+       │      ↓
+       │   Submission / grading data
+       │
+       └── Storage
+              ↓
+           Captured handwriting images
+
+Questions I still need to validate include:
+
+- How should Next.js connect to Supabase?
+- Which credentials can safely exist in the browser?
+- Which operations should remain server-side?
+- How should the storage bucket be configured?
+- Should captured images be public or private?
+- What is the simplest appropriate database schema?
+
+No Supabase integration was implemented on this day.
+
+---
+
+## Gemini Research
+
+I also did some initial reading around Gemini and multimodal/image processing.
+
+The main idea I wanted to validate was whether Gemini could receive the captured handwriting image and return grading information that the application could consume.
+
+The conceptual flow was:
+
+    Image
+       ↓
+    Gemini
+       ↓
+    Recognition / Comparison
+       ↓
+    Structured Result
+
+Important open questions included:
+
+- How should image data be provided to Gemini?
+- Can the response follow a predictable schema?
+- How should malformed model output be handled?
+- Should Gemini determine only correctness or also calculate the score?
+- How should the API key be protected?
+
+No Gemini integration was implemented on this day.
+
+---
+
+## Current Architecture Hypothesis
+
+At the end of Day 2, my working architecture remained:
+
+    Student
+       ↓
+    Next.js UI
+       ↓
+    Camera Capture
+       ↓
+    Next.js Backend
+       ↓
+    Supabase Storage
+       ↓
+    Gemini
+       ↓
+    Structured Grading Result
+       ↓
+    Application Validation
+       ↓
+    Supabase PostgreSQL
+       ↓
+    Backend Response
+       ↓
+    Result & Correction UI
+
+This architecture is still subject to change as implementation exposes actual
+constraints.
+
+---
+
+## Implementation Progress
+
+### Completed
+
+- [x] Initialized Next.js application
+- [x] Used recommended Next.js defaults
+- [x] TypeScript configured by `create-next-app`
+- [x] ESLint configured
+- [x] Tailwind CSS configured
+- [x] App Router enabled
+- [x] Examined the initial project structure
+- [x] Continued building the Next.js mental model
+
+### Research
+
+- [x] Initial Next.js exploration
+- [x] Initial Supabase reading
+- [x] Initial Gemini reading
+
+### Not Yet Implemented
+
+- [ ] Supabase integration
+- [ ] Database schema
+- [ ] Image storage
+- [ ] Backend submission endpoint
+- [ ] Gemini integration
+- [ ] Structured grading response
+- [ ] Database persistence
+- [ ] Camera workflow
+- [ ] Results workflow
+
+---
+
+## End-of-Day Reflection
+
+Day 2 moved the project from planning into an actual application foundation.
+
+The most useful part was seeing the generated Next.js structure and comparing
+it with the Laravel development model I already understand.
+
+Instead of thinking:
+
+    Where is routes/web.php?
+    Where is the Controller?
+    Where is the Blade view?
+
+I started thinking:
+
+    What route segment is this?
+    Is this a page or an API endpoint?
+    Does this logic belong on the server or client?
+    Does this require a Route Handler?
+    Where should external services be accessed?
+
+I still do not consider myself fully comfortable with the Next.js model.
+
+However, I now have enough of a mental framework to continue learning through
+implementation rather than delaying development until I understand the entire
+framework.
+
+### Next Priority
+
+Start implementing the highest-risk technical workflow:
+
+    Image
+       ↓
+    Backend
+       ↓
+    Storage
+       ↓
+    Gemini
+       ↓
+    Structured Result
+       ↓
+    Database
+       ↓
+    API Response
+
+---
+
+# Day 3 — Core Backend Implementation
 
 **Date:** September 3, 2026
 
 ## Goal
 
-Turn the architecture into a working application foundation and prove the
-highest-risk technical workflow.
+Begin implementing and validating the highest-risk technical workflow.
 
 Primary target:
 
@@ -418,84 +805,51 @@ Primary target:
       ↓
     Gemini
       ↓
+    Structured Result
+      ↓
     Database
       ↓
-    JSON Response
+    API Response
 
 ---
 
-## Challenge 1 — [Title]
+## Current Status
 
-### Problem
+Not started yet.
 
-...
+---
 
-### Initial Thought
+## Implementation Priorities
 
-...
+- [ ] Validate the Supabase integration approach
+- [ ] Define the minimum database schema
+- [ ] Configure image storage
+- [ ] Create the backend submission endpoint
+- [ ] Validate image input
+- [ ] Integrate Gemini
+- [ ] Define the structured grading response
+- [ ] Validate the AI response
+- [ ] Calculate the score in application logic
+- [ ] Persist the submission and result
+- [ ] Return a normalized API response
 
-### Research
+---
 
-...
+## Challenges
 
-### Decision
+To be documented as they occur.
 
-...
+---
 
-### AI Assistance
+## Decisions
 
-**ChatGPT:**
-
-...
-
-**Codex:**
-
-...
-
-### Implementation
-
-...
-
-### Verification
-
-...
-
-### Result
-
-- [ ] Working
-- [ ] Partial
-- [ ] Rejected / replaced
-
-### Lesson
-
-...
+To be documented based on actual implementation findings.
 
 ---
 
 ## End-of-Day Reflection
 
-### Completed
-
-- [ ] Project foundation
-- [ ] Supabase integration
-- [ ] Storage
-- [ ] Backend endpoint
-- [ ] Gemini integration
-- [ ] Structured response
-- [ ] Database persistence
-- [ ] End-to-end backend test
-
-### Biggest Challenge
-
-...
-
-### Biggest Lesson
-
-...
-
-### Next Priority
-
-Connect the working backend pipeline to the complete student workflow.
+To be completed at the end of Day 3 based on actual progress.
 
 ---
 
@@ -505,7 +859,7 @@ Connect the working backend pipeline to the complete student workflow.
 
 ## Goal
 
-Complete the primary student experience around the working backend pipeline.
+Connect the core backend workflow to the student-facing experience.
 
 ---
 
@@ -536,9 +890,13 @@ Complete the primary student experience around the working backend pipeline.
 ## Development Focus
 
 - [ ] Camera interface
+- [ ] Camera permission handling
 - [ ] Image capture
+- [ ] Image preview
+- [ ] Retake functionality
 - [ ] Upload interaction
 - [ ] Loading state
+- [ ] Error state
 - [ ] Grading response
 - [ ] Score display
 - [ ] Incorrect answer feedback
@@ -552,31 +910,13 @@ Complete the primary student experience around the working backend pipeline.
 
 ## Challenges
 
-...
+To be documented based on actual development.
 
 ---
 
 ## End-of-Day Reflection
 
-### Completed
-
-...
-
-### Remaining Problems
-
-...
-
-### Features Intentionally Not Implemented
-
-...
-
-### Why
-
-...
-
-### Next Priority
-
-Stop expanding scope and stabilize the application for submission.
+To be completed at the end of Day 4.
 
 ---
 
@@ -586,10 +926,9 @@ Stop expanding scope and stabilize the application for submission.
 
 ## Goal
 
-Prioritize quality over additional features.
+Prioritize reliability, security, documentation, and deployment quality over adding new features.
 
-No major functionality should be introduced unless required to fix the core
-workflow.
+No major functionality should be introduced unless required to complete or fix the core workflow.
 
 ---
 
@@ -603,6 +942,7 @@ workflow.
 - [ ] Image submission works
 - [ ] Gemini processing works
 - [ ] Results are persisted
+- [ ] Score is calculated
 - [ ] Score is displayed
 - [ ] Correction overlay works
 - [ ] Results history works
@@ -611,15 +951,19 @@ workflow.
 
 - [ ] Vercel deployment verified
 - [ ] Production environment variables verified
-- [ ] Mobile test completed
+- [ ] Main workflow tested in production
+- [ ] Mobile behavior tested
 - [ ] Error states tested
+- [ ] No critical console errors
 
 ### Security
 
-- [ ] Gemini key is server-side
-- [ ] No secret committed to repository
-- [ ] Supabase privileged credentials protected
+- [ ] Gemini API key remains server-side
+- [ ] No secrets committed to repository
+- [ ] Privileged Supabase credentials protected
+- [ ] Environment files ignored
 - [ ] Upload validation reviewed
+- [ ] AI response validation reviewed
 - [ ] Error responses reviewed
 
 ### Documentation
@@ -644,6 +988,8 @@ workflow.
 
 # Final Reflection
 
+To be completed after the implementation is stabilized.
+
 ## What I Learned
 
 ...
@@ -652,7 +998,15 @@ workflow.
 
 ...
 
-## What Changed Between Day 1 and Day 5
+## How My Understanding Changed
+
+...
+
+## How My Laravel Experience Helped
+
+...
+
+## Where the Laravel Mental Model Did Not Apply
 
 ...
 
