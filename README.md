@@ -5,6 +5,12 @@ Technical assignment for the Back-End Developer recruitment process.
 > Status: In Development  
 > Development Period: September 1–5, 2026
 
+## Live Demo
+
+The application is deployed on Vercel.
+
+**Live Application:** [TingXie HERO](https://technical-test-handrwiting-grading.vercel.app/)
+
 ## Overview
 
 TingXie HERO is a student-focused Chinese handwriting practice and grading application.
