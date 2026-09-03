@@ -793,9 +793,10 @@ Start implementing the highest-risk technical workflow:
 
 ## Goal
 
-Begin implementing and validating the highest-risk technical workflow.
+Begin moving from framework research into implementation and validate the
+foundation required for the highest-risk backend workflow.
 
-Primary target:
+The long-term target remains:
 
     Image
       ↓
@@ -811,48 +812,582 @@ Primary target:
       ↓
     API Response
 
----
-
-## Current Status
-
-Not started yet.
+Rather than implementing the entire pipeline immediately, I decided to validate
+each infrastructure dependency independently first.
 
 ---
 
-## Implementation Priorities
+## Starting Point
 
-- [ ] Validate the Supabase integration approach
-- [ ] Define the minimum database schema
-- [ ] Configure image storage
-- [ ] Create the backend submission endpoint
-- [ ] Validate image input
+At the beginning of Day 3, the project had:
+
+- A working Next.js application.
+- TypeScript, Tailwind CSS, ESLint, and App Router configured.
+- A GitHub repository.
+- Initial architecture and planning documentation.
+- Initial research into Supabase and Gemini.
+
+However, the application had not yet connected to any external service.
+
+The first implementation objective was therefore to prove that the application
+could be deployed and communicate with Supabase before adding more complex
+application behavior.
+
+---
+
+## Early Vercel Deployment
+
+Before implementing the backend pipeline, I deployed the initial Next.js
+application to Vercel.
+
+I intentionally deployed early instead of waiting until the application was
+complete.
+
+The purpose was to validate:
+
+- GitHub repository integration.
+- Next.js framework detection.
+- Production build compatibility.
+- Basic Vercel deployment behavior.
+- The deployment workflow that will eventually be used for the final
+  submission.
+
+The first attempt exposed a GitHub repository access/permission issue between
+Vercel and the repository.
+
+After correcting the repository access configuration, the deployment completed
+successfully.
+
+This was useful because deployment became a verified part of the development
+workflow rather than an unknown risk left until the submission deadline.
+
+---
+
+## Supabase Project Setup
+
+After validating deployment, I moved to Supabase.
+
+My first goal was deliberately small:
+
+> Prove that a Next.js server-side Route Handler can successfully communicate
+> with the Supabase project.
+
+I configured the local Supabase environment variables without committing their
+values to the repository.
+
+The project currently recognizes the Supabase project URL and publishable key.
+
+The Supabase dependencies installed while following the Supabase project
+connection guidance included:
+
+    @supabase/supabase-js
+    @supabase/ssr
+    @supabase/server
+
+During implementation, I learned that these packages have different
+responsibilities.
+
+`@supabase/supabase-js` provides the core JavaScript client used for Supabase
+services.
+
+`@supabase/ssr` is intended for server-side rendering scenarios involving
+cookie-based authentication.
+
+`@supabase/server` provides server-oriented utilities, particularly for
+server-side authentication and request contexts.
+
+Authentication is not part of the current implementation, so the initial
+database connection only requires `@supabase/supabase-js`.
+
+The additional packages remain installed because they were introduced while
+following the Supabase project setup guidance, but the application does not
+currently depend on them.
+
+---
+
+## Server-Side Supabase Client
+
+A small server-side Supabase utility was introduced under:
+
+    lib/supabase/server.ts
+
+The utility creates the Supabase client using environment configuration.
+
+Because authentication is not implemented yet, the current client is intentionally
+minimal.
+
+The important architectural boundary is:
+
+    Browser
+       ↓
+    Next.js Route Handler
+       ↓
+    Server-side Supabase Client
+       ↓
+    Supabase
+
+This helped validate one of the questions I had during Day 2:
+
+> Where should Supabase access live?
+
+For backend-controlled operations, I now have a working pattern where Supabase
+communication can remain behind the Next.js server boundary instead of requiring
+the browser to directly perform the operation.
+
+---
+
+## Supabase Health Endpoint
+
+To verify the integration independently from future application features, I
+created a temporary health endpoint:
+
+    GET /api/health/supabase
+
+The Route Handler performs a minimal query against the `submissions` table
+without returning submission data.
+
+Conceptually:
+
+    GET /api/health/supabase
+             ↓
+    Next.js Route Handler
+             ↓
+    Supabase Client
+             ↓
+    submissions
+             ↓
+       { "ok": true }
+
+The endpoint intentionally returns only a small health response.
+
+Successful response:
+
+    {
+      "ok": true
+    }
+
+Failure response:
+
+    {
+      "ok": false
+    }
+
+Detailed Supabase errors remain in server logs instead of being returned to the
+client.
+
+---
+
+## Manual Supabase Verification
+
+I first verified the integration manually.
+
+Running:
+
+    npm run dev
+
+and accessing:
+
+    http://localhost:3000/api/health/supabase
+
+returned:
+
+    {
+      "ok": true
+    }
+
+This confirmed that:
+
+- Next.js could load the Supabase environment configuration.
+- The Route Handler executed successfully.
+- The Supabase client could communicate with the project.
+- The `submissions` table could be reached using the current access policy.
+
+At this point, the first external service integration in the application was
+working.
+
+---
+
+## Introducing Automated Testing
+
+After the Supabase connection worked manually, I decided to establish a testing
+foundation before adding more backend features.
+
+The motivation was simple:
+
+> Every new feature should have an appropriate way to verify that existing
+> behavior still works.
+
+I did not want to postpone testing until the application became significantly
+larger.
+
+Two testing tools were introduced:
+
+    Vitest
+       ↓
+    Unit-level application logic
+
+    Playwright
+       ↓
+    Integration and end-to-end behavior
+
+This creates the initial testing strategy:
+
+    Pure application logic
+             ↓
+           Vitest
+
+    Running application / API / external service
+             ↓
+          Playwright
+
+    Complete browser workflow
+             ↓
+          Playwright E2E
+
+---
+
+## Vitest Setup
+
+Vitest was configured as the unit testing foundation.
+
+The configuration includes support for:
+
+- TypeScript.
+- React.
+- `jsdom`.
+- TypeScript path resolution.
+
+Unit tests are organized under:
+
+    tests/unit/
+
+A minimal smoke test was added first.
+
+The smoke test does not test business behavior yet.
+
+Its purpose is simply to prove that the test runner and configuration are
+working before real grading and validation logic is introduced.
+
+This means future deterministic logic such as:
+
+- Image input validation.
+- Grading response validation.
+- Score calculation.
+- Data transformation.
+
+can be tested independently from Supabase or Gemini.
+
+---
+
+## Playwright Setup
+
+Playwright was added for integration and end-to-end testing.
+
+The configuration uses:
+
+    http://localhost:3000
+
+as the application base URL.
+
+The test environment starts a production-like Next.js application using:
+
+    npm run build
+    npm run start
+
+rather than relying only on the development server.
+
+Tests are organized under:
+
+    tests/e2e/
+
+The initial Playwright configuration uses Chromium.
+
+Additional browsers were intentionally not introduced yet because the immediate
+goal is validating application behavior rather than building a large
+cross-browser test matrix.
+
+---
+
+## Real Supabase Integration Test
+
+The first meaningful automated integration test verifies the Supabase health
+endpoint.
+
+The test performs a real request to:
+
+    GET /api/health/supabase
+
+and verifies:
+
+- The HTTP request succeeds.
+- The response is JSON.
+- The response contains exactly:
+
+      {
+        "ok": true
+      }
+
+Supabase is intentionally not mocked in this test.
+
+Therefore, the test verifies the real integration:
+
+    Playwright
+        ↓
+    Running Next.js Application
+        ↓
+    Route Handler
+        ↓
+    Supabase
+        ↓
+    Response
+
+This is different from a unit test because the goal is specifically to detect
+problems in the integration boundary.
+
+---
+
+## Verification Workflow
+
+After introducing the testing foundation, I verified the project using:
+
+    npm test
+    npm run test:unit
+    npm run test:e2e
+    npm run lint
+    npm run build
+
+All checks passed.
+
+This established a repeatable verification workflow that can be used as new
+features are added.
+
+The current development loop is now closer to:
+
+    Implement
+        ↓
+    Review
+        ↓
+    Unit / Integration Test
+        ↓
+    Lint
+        ↓
+    Build
+        ↓
+    Manual Verification
+        ↓
+    Accept
+
+---
+
+## Reviewing AI-Generated Implementation
+
+An important part of Day 3 was not only implementing features, but reviewing
+the implementation proposed by AI.
+
+While reviewing the Supabase setup, I noticed that the dependency list included:
+
+    @supabase/server
+
+even though the current Supabase client was created using:
+
+    @supabase/supabase-js
+
+Instead of immediately accepting or removing the dependency, I asked Codex to
+inspect:
+
+- When the dependency appeared.
+- Whether application code imported it.
+- What responsibility it provides.
+- Whether it was required by the current implementation.
+
+The review confirmed that:
+
+- `@supabase/server` was already present before the testing work.
+- The application source does not currently import it.
+- The working Supabase client uses `@supabase/supabase-js`.
+- It is not required for the current health endpoint.
+
+I then revisited the Supabase project setup flow and confirmed that
+`@supabase/server` had originally been installed while following Supabase's
+own project connection instructions.
+
+I decided to leave the dependency installed for now rather than spending more
+time changing a working setup, while keeping the distinction documented.
+
+This was a useful example of the AI-assisted workflow I wanted to follow:
+
+    AI-assisted implementation
+             ↓
+    Inspect the result
+             ↓
+    Notice an unexpected detail
+             ↓
+    Question the assumption
+             ↓
+    Verify its origin and responsibility
+             ↓
+    Make the final decision myself
+
+---
+
+## Security Observations
+
+The current integration uses the Supabase publishable key.
+
+No service-role or secret key is used.
+
+The health endpoint:
+
+- Does not return database records.
+- Does not return credentials.
+- Does not return detailed Supabase errors.
+- Performs only a minimal connectivity query.
+- Leaves Row Level Security enabled.
+
+Authentication has deliberately not been introduced yet.
+
+This also exposed an important architecture question for the next stage:
+
+> Should submission creation and private image storage operate through
+> publishable-key RLS policies, or should privileged backend operations use a
+> server-only Supabase credential?
+
+I decided not to answer this by opening broad RLS policies simply to make the
+next feature work.
+
+The security model will be reviewed before implementing the submission creation
+and storage pipeline.
+
+---
+
+## Implementation Progress
+
+### Completed
+
+- [x] Validated initial Vercel deployment
+- [x] Connected the GitHub repository to Vercel
+- [x] Verified production Next.js build on Vercel
+- [x] Configured local Supabase environment variables
+- [x] Established server-side Supabase connectivity
+- [x] Added a Supabase health Route Handler
+- [x] Manually verified the Supabase connection
+- [x] Added Vitest testing foundation
+- [x] Added Playwright testing foundation
+- [x] Added a unit-test smoke check
+- [x] Added a real Supabase integration test
+- [x] Verified tests, lint, and production build
+- [x] Reviewed unexpected Supabase dependency usage
+
+### Still In Progress
+
+- [ ] Finalize the minimum database schema
+- [ ] Review database RLS policies
+- [ ] Configure private image storage
+- [ ] Decide the server-side Storage/database security model
+- [ ] Create the handwriting submission endpoint
+- [ ] Validate uploaded image input
 - [ ] Integrate Gemini
-- [ ] Define the structured grading response
-- [ ] Validate the AI response
-- [ ] Calculate the score in application logic
-- [ ] Persist the submission and result
-- [ ] Return a normalized API response
+- [ ] Define and validate the structured grading response
+- [ ] Calculate score in deterministic application logic
+- [ ] Persist submission and grading results
+- [ ] Return the normalized grading response
 
 ---
 
 ## Challenges
 
-To be documented as they occur.
+### Vercel Repository Access
+
+The first Vercel deployment attempt could not access the GitHub repository.
+
+Rather than continuing application development and leaving deployment until the
+end, I resolved the repository integration early.
+
+After the GitHub/Vercel access configuration was corrected, deployment
+succeeded.
+
+### Understanding Supabase Package Responsibilities
+
+Following the Supabase connection flow introduced multiple Supabase packages.
+
+Reviewing the implementation made it clear that installing a package and
+actually requiring that package for the current architecture are different
+questions.
+
+The current integration only depends directly on the base Supabase JavaScript
+client.
+
+### Testing an External Dependency
+
+The Supabase health check initially existed only as a manual verification.
+
+Instead of leaving it that way, I added a Playwright integration test that
+starts the application and verifies the real Supabase connection.
+
+This gives the project an early regression check for an important external
+dependency.
 
 ---
 
-## Decisions
+## Day 3 Reflection — Current Checkpoint
 
-To be documented based on actual implementation findings.
+Day 3 marks the transition from learning the stack primarily through
+documentation into validating it through working implementation.
+
+The most important progress so far is not the number of application features.
+
+It is that several previously theoretical assumptions are now verified:
+
+    Next.js
+       ↓
+    Route Handler
+       ↓
+    Supabase
+
+works in the actual application.
+
+The application also now has a repeatable testing foundation before the
+higher-risk grading pipeline is introduced.
+
+One useful lesson from this stage was that AI assistance is most useful when its
+output remains reviewable.
+
+The `@supabase/server` dependency investigation was a small example: instead of
+assuming that an installed dependency was necessary, I traced why it existed,
+checked whether the code actually used it, and made the decision after
+understanding its role.
+
+### Current Checkpoint
+
+    Next.js application           ✓
+    GitHub repository             ✓
+    Initial Vercel deployment     ✓
+    Supabase connectivity         ✓
+    Health endpoint               ✓
+    Vitest foundation             ✓
+    Playwright foundation         ✓
+    Real integration test         ✓
+    Lint                          ✓
+    Production build              ✓
+
+### Next Priority
+
+The next implementation step is:
+
+    Review schema and RLS
+             ↓
+    Configure private Storage
+             ↓
+    Implement submission upload
+             ↓
+    Test submission integration
+             ↓
+    Integrate Gemini
+
+The goal remains to prove the complete backend vertical slice before spending
+significant time on interface polish.
 
 ---
-
-## End-of-Day Reflection
-
-To be completed at the end of Day 3 based on actual progress.
-
----
-
 # Day 4 — End-to-End Product Flow
 
 **Date:** September 4, 2026
