@@ -7,7 +7,7 @@ export async function GET() {
     const gemini = createGeminiServerClient();
 
     await gemini.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.5-flash",
       contents: "Reply with the single word OK.",
     });
 
