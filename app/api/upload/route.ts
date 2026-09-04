@@ -1,5 +1,8 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { gradeHandwriting } from "@/lib/grading/grade-handwriting";
+import {
+  gradeHandwriting,
+  GradingTemporarilyUnavailableError,
+} from "@/lib/grading/grade-handwriting";
 import { calculateScore } from "@/lib/grading/score";
 
 export const dynamic = "force-dynamic";
@@ -159,18 +162,32 @@ export async function POST(request: Request) {
     try {
       gradingResults = await gradeHandwriting(imageValue, lesson.word_list);
     } catch (error) {
+      if (error instanceof GradingTemporarilyUnavailableError) {
+        console.error("Handwriting grading is temporarily unavailable.", {
+          code: error.code,
+          submissionId,
+        });
+
+        return Response.json(
+          {
+            error: {
+              code: error.code,
+              message:
+                "We couldn't grade your handwriting right now. Your submission has been saved. Please try again in a moment.",
+              retryable: true,
+            },
+            submissionId,
+          },
+          { status: 503 },
+        );
+      }
+
       console.error(
         "Gemini handwriting grading failed.",
         error instanceof Error ? error.message : "Unknown error",
       );
 
-      return Response.json(
-        {
-          error: "Submission uploaded, but grading is temporarily unavailable.",
-          submissionId,
-        },
-        { status: 502 },
-      );
+      return jsonError("Unable to grade handwriting.", 500);
     }
 
     if (gradingResults.length > 0) {

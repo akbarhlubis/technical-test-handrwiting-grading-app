@@ -1434,6 +1434,12 @@ on subjective AI output. Read-only schema verification also reports RLS
 disabled on the relevant public tables; this remains a production blocker and
 was not changed automatically.
 
+Manual grading exposed a real upstream `503 UNAVAILABLE` high-demand response
+after the submission and image had already been saved. The grading module now
+handles only that temporary availability class with three bounded attempts and
+approximately one- and two-second backoff delays. Exhaustion returns a stable
+retryable application error while preserving the existing submission.
+
 ---
 
 # Day 4 — End-to-End Product Flow

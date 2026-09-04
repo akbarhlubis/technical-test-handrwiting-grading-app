@@ -626,9 +626,15 @@ provider boundary and response contract remain explicit so the model can be
 changed without moving credentials into the browser.
 
 If grading fails after the upload row is created, the submission is preserved
-and the client receives a non-sensitive `502` response with the submission ID.
+and the client receives a non-sensitive `503` response with the submission ID.
 This supports retry/recovery without orphaning the uploaded image from the
 submission record.
+
+Temporary provider availability failures are retried in the same grading
+attempt with bounded backoff: up to three total calls, waiting approximately
+one second and then two seconds with small jitter. Exhausted retries map to a
+typed retryable application error; malformed output and other failures are not
+retried.
 
 ---
 
