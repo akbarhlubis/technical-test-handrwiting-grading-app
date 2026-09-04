@@ -610,6 +610,28 @@ database access patterns.
 
 ---
 
+# ADR-009 — Complete Server-Side Grading Vertical Slice
+
+**Status:** Accepted for the technical-assignment backend checkpoint
+
+The upload Route Handler now loads `lessons.word_list`, sends the uploaded
+image to the server-side Gemini client using structured JSON output, ignores
+invented words, rejects omitted or unusable expected-word results, calculates
+the score in application code, and persists `character_results` plus
+`submissions.score`.
+
+The model is currently `gemini-3.5-flash` because the previously specified
+model identifier was unavailable in the configured Gemini API environment. The
+provider boundary and response contract remain explicit so the model can be
+changed without moving credentials into the browser.
+
+If grading fails after the upload row is created, the submission is preserved
+and the client receives a non-sensitive `502` response with the submission ID.
+This supports retry/recovery without orphaning the uploaded image from the
+submission record.
+
+---
+
 # Current Decision Summary
 
 | ID | Decision | Status |
@@ -622,7 +644,7 @@ database access patterns.
 | ADR-006 | Establish Automated Testing Early | Accepted |
 | ADR-007 | Keep AI-Generated Changes Reviewable | Accepted |
 | ADR-008 | Keep Initial Supabase Integration Minimal | Accepted |
-| Open | Submission Storage and Database Security | Under Review |
+| ADR-009 | Complete Server-Side Grading Vertical Slice | Accepted for checkpoint; production hardening pending |
 
 ---
 

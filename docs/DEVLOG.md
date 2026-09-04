@@ -1407,6 +1407,35 @@ The goal remains to prove the complete backend vertical slice before spending
 significant time on interface polish.
 
 ---
+# Backend Vertical Slice Checkpoint — Upload to Grading
+
+**Date:** September 5, 2026
+
+## Implemented
+
+- Added lesson lookup from `lessons.word_list` before Storage upload.
+- Added server-only Gemini image grading with JSON structured output.
+- Added normalization that preserves lesson order, ignores invented words, and
+  rejects omitted or unusable expected-word results.
+- Added deterministic application scoring with safe empty-list handling.
+- Added persistence for `character_results` and `submissions.score`.
+- Preserved the uploaded submission when Gemini is temporarily unavailable.
+- Added Vitest coverage for normalization and score calculation.
+
+## Verification Notes
+
+The assignment's earlier Gemini model identifier was unavailable in the current
+API environment. The existing health check and grading path therefore use the
+currently verified `gemini-3.5-flash` model. The API key remains server-only.
+
+The connected Supabase project has a seeded lesson, but a real happy-path test
+is kept as a manual operation because it creates external records and depends
+on subjective AI output. Read-only schema verification also reports RLS
+disabled on the relevant public tables; this remains a production blocker and
+was not changed automatically.
+
+---
+
 # Day 4 — End-to-End Product Flow
 
 **Date:** September 4, 2026
