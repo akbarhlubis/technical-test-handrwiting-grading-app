@@ -549,11 +549,11 @@ represents UI for:
 
 Conceptually:
 
-    app/api/submissions/route.ts
+    app/api/upload/route.ts
 
 could provide an HTTP endpoint such as:
 
-    /api/submissions
+    /api/upload
 
 This started to give me a Laravel-oriented mental bridge:
 
@@ -1232,9 +1232,13 @@ This was a useful example of the AI-assisted workflow I wanted to follow:
 
 ## Security Observations
 
-The current integration uses the Supabase publishable key.
+The health endpoint uses the Supabase publishable key. The upload checkpoint
+uses `SUPABASE_SECRET_KEY` only inside a server-side Route Handler because the
+private Storage bucket and controlled database write must not be exposed to the
+browser.
 
-No service-role or secret key is used.
+The secret key is not used by the health endpoint and is never exposed through
+`NEXT_PUBLIC_*`. It is used only by the upload server utility.
 
 The health endpoint:
 
@@ -1242,7 +1246,7 @@ The health endpoint:
 - Does not return credentials.
 - Does not return detailed Supabase errors.
 - Performs only a minimal connectivity query.
-- Leaves Row Level Security enabled.
+- Does not modify Row Level Security.
 
 Authentication has deliberately not been introduced yet.
 
@@ -1255,8 +1259,21 @@ This also exposed an important architecture question for the next stage:
 I decided not to answer this by opening broad RLS policies simply to make the
 next feature work.
 
-The security model will be reviewed before implementing the submission creation
-and storage pipeline.
+The upload checkpoint uses this interim assignment architecture:
+
+    Browser
+        -> Next.js upload Route Handler
+        -> Server-only privileged Supabase client
+        -> Private Storage and database
+
+This is a proportional technical-assignment choice while authentication is not
+implemented. It is not a universal production architecture recommendation.
+
+The connected Supabase project currently reports RLS disabled for the
+`lessons`, `submissions`, and `character_results` tables. This is a critical
+security issue that must be resolved with deliberate policies before exposing
+the application to real users. It was not changed automatically by this
+checkpoint.
 
 ---
 
@@ -1277,15 +1294,17 @@ and storage pipeline.
 - [x] Added a real Supabase integration test
 - [x] Verified tests, lint, and production build
 - [x] Reviewed unexpected Supabase dependency usage
+- [x] Added a privileged server-side Supabase client for controlled uploads
+- [x] Added `POST /api/upload` with server-side image and field validation
+- [x] Added Storage-to-database cleanup behavior for failed submission inserts
+- [x] Added Playwright validation coverage for the upload endpoint
 
 ### Still In Progress
 
-- [ ] Finalize the minimum database schema
-- [ ] Review database RLS policies
-- [ ] Configure private image storage
-- [ ] Decide the server-side Storage/database security model
-- [ ] Create the handwriting submission endpoint
-- [ ] Validate uploaded image input
+- [ ] Finalize the minimum database schema and RLS strategy
+- [ ] Complete a real upload happy-path test with a seeded lesson
+- [ ] Configure and verify private image storage policies
+- [ ] Review the server-side Storage/database security model before production
 - [ ] Integrate Gemini
 - [ ] Define and validate the structured grading response
 - [ ] Calculate score in deterministic application logic

@@ -359,7 +359,7 @@ For example:
     calculateScore()
         → Unit test
 
-    POST /api/submissions
+    POST /api/upload
         → Integration test
 
     Camera → Submit → Results
@@ -525,7 +525,8 @@ The current integration:
 - Does not use a service-role or secret key.
 - Does not return database records from the health endpoint.
 - Does not expose detailed Supabase errors to the client.
-- Keeps Row Level Security enabled.
+- Does not modify Row Level Security. The connected project must be checked
+  separately because the current tables report RLS disabled.
 
 ## Trade-Off
 
@@ -538,7 +539,7 @@ provides sufficient integration coverage.
 
 # Open Architecture Decision — Submission Storage and Database Security
 
-**Status:** Under Review  
+**Status:** Accepted for upload checkpoint; production hardening pending
 **Opened:** September 3, 2026
 
 ## Context
@@ -566,6 +567,38 @@ The implementation must determine:
 - Should privileged writes exist only behind Next.js Route Handlers?
 - Is a server-only Supabase credential appropriate for those operations?
 - How should failed uploads and partial submissions be handled?
+
+## Decision
+
+For the upload checkpoint, submission writes use this path:
+
+    Browser
+        -> Next.js POST /api/upload
+        -> Server-only Supabase client using SUPABASE_SECRET_KEY
+        -> Private Storage and submissions database row
+
+The browser does not write directly to the private Storage bucket or database.
+The application generates the submission UUID before uploading, uses it in the
+Storage path, and reuses it for the database row. If the database insert fails,
+the uploaded object is removed on a best-effort basis.
+
+This is a proportional choice for the technical assignment while authentication
+is not implemented. It is not a universal recommendation for production
+systems; production access would require a complete authentication, ownership,
+RLS, and abuse-prevention design.
+
+## Security Status
+
+The connected Supabase project currently reports Row Level Security disabled on
+`public.lessons`, `public.submissions`, and `public.character_results`. This is
+a critical issue because exposed tables can be read or modified by clients with
+the publishable key. This checkpoint does not automatically enable RLS or add
+policies, because enabling RLS without matching policies can break the current
+application and policy ownership must be reviewed explicitly.
+
+Before production use, enable RLS and define policies that match the eventual
+authentication and ownership model. The server-only secret key must remain
+outside browser-exposed environment variables.
 
 ## Current Direction
 

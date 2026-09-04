@@ -81,6 +81,14 @@ Target grading workflow:
 The target architecture may still evolve as implementation exposes actual
 constraints.
 
+The upload checkpoint is implemented as a server-side flow:
+
+    multipart/form-data
+        -> POST /api/upload
+        -> Server validation
+        -> Private Storage upload
+        -> Pending submissions row
+
 ## Current Progress
 
 ### Day 1 — Requirement Understanding & Preparation
@@ -112,8 +120,9 @@ constraints.
 - [x] Added real Supabase integration test
 - [x] Verified lint and production build
 - [ ] Finalize database schema and RLS strategy
-- [ ] Configure handwriting image storage
-- [ ] Implement submission API
+- [ ] Complete Storage and database happy-path verification
+- [x] Implemented `POST /api/upload` validation and persistence path
+- [ ] Verify upload happy path with a seeded lesson
 - [ ] Integrate Gemini grading
 - [ ] Complete backend vertical slice
 
@@ -151,3 +160,10 @@ npm run test:unit
 npm run test:e2e
 npm run lint
 npm run build
+```
+
+The upload endpoint currently has automated integration coverage for invalid
+requests. A real successful upload test remains pending because the connected
+Supabase project currently has no lesson rows available for the foreign-key
+requirement. The project also requires an RLS policy review before production
+use.
