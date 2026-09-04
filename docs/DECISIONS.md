@@ -648,6 +648,11 @@ intrinsic-resolution capture behavior explicit and proportional to the
 assignment. The alignment overlay is visual-only and is not drawn into the
 captured canvas image.
 
+The grading result screen consumes the backend score directly rather than
+recomputing it in the browser. Red correction annotations are intentionally
+UI-level placement because the backend currently returns no OCR coordinates;
+the captured image itself remains unchanged.
+
 | ID | Decision | Status |
 |---|---|---|
 | ADR-001 | Use the Suggested Technology Stack | Accepted |

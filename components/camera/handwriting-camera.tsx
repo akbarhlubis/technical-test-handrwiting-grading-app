@@ -2,8 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import GradingResult from "@/components/grading/grading-result";
+import type {
+  UploadErrorResponse,
+  UploadSuccessResponse,
+} from "@/components/grading/types";
 
 type CameraState = "initializing" | "active" | "denied" | "unavailable" | "captured";
+type GradingState = "idle" | "submitting" | "result" | "error";
+
+const LESSON_ID = "865dc30c-a821-4589-b088-a4a96d883541";
+const STUDENT_ID = "lucas-primary-2";
 
 type TorchTrack = MediaStreamTrack & {
   getCapabilities?: () => MediaTrackCapabilities & { torch?: boolean };
@@ -24,6 +33,35 @@ function getCameraErrorState(error: unknown): Exclude<CameraState, "initializing
   return "unavailable";
 }
 
+function isUploadErrorResponse(value: unknown): value is UploadErrorResponse {
+  if (typeof value !== "object" || value === null || !("error" in value)) {
+    return false;
+  }
+
+  const error = value.error;
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  );
+}
+
+function isUploadSuccessResponse(value: unknown): value is UploadSuccessResponse {
+  if (typeof value !== "object" || value === null || !("submission" in value) || !("results" in value)) {
+    return false;
+  }
+
+  const submission = value.submission;
+  return (
+    typeof submission === "object" &&
+    submission !== null &&
+    "score" in submission &&
+    typeof submission.score === "number" &&
+    Array.isArray(value.results)
+  );
+}
+
 export default function HandwritingCamera() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -33,6 +71,9 @@ export default function HandwritingCamera() {
   const previewUrlRef = useRef<string | null>(null);
   const [torchSupported, setTorchSupported] = useState(false);
   const [torchEnabled, setTorchEnabled] = useState(false);
+  const [gradingState, setGradingState] = useState<GradingState>("idle");
+  const [gradingResponse, setGradingResponse] = useState<UploadSuccessResponse | null>(null);
+  const [gradingError, setGradingError] = useState<UploadErrorResponse["error"] | null>(null);
 
   const startCamera = useCallback(async () => {
     stopStream(streamRef.current);
@@ -138,7 +179,63 @@ export default function HandwritingCamera() {
     }
     setPreviewUrl(null);
     setCapturedBlob(null);
+    setGradingState("idle");
+    setGradingResponse(null);
+    setGradingError(null);
     void startCamera();
+  }
+
+  async function submitGrading() {
+    if (!capturedBlob || gradingState === "submitting") {
+      return;
+    }
+
+    setGradingState("submitting");
+    setGradingError(null);
+
+    const formData = new FormData();
+    formData.append("image", capturedBlob, "handwriting.jpg");
+    formData.append("lessonId", LESSON_ID);
+    formData.append("studentId", STUDENT_ID);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const body: unknown = await response.json();
+
+      if (!response.ok) {
+        if (isUploadErrorResponse(body)) {
+          setGradingError(body.error);
+        } else {
+          setGradingError({ message: "We couldn't grade your handwriting. Please try again." });
+        }
+        setGradingState("error");
+        return;
+      }
+
+      if (!isUploadSuccessResponse(body)) {
+        throw new Error("Invalid grading response.");
+      }
+
+      setGradingResponse(body);
+      setGradingState("result");
+    } catch {
+      setGradingError({ message: "We couldn't grade your handwriting. Please try again." });
+      setGradingState("error");
+    }
+  }
+
+  if (cameraState === "captured" && gradingState === "result" && gradingResponse && previewUrl) {
+    return (
+      <GradingResult
+        imageUrl={previewUrl}
+        score={gradingResponse.submission.score}
+        results={gradingResponse.results}
+        onRetake={retake}
+      />
+    );
   }
 
   if (cameraState === "captured" && capturedBlob && previewUrl) {
@@ -150,19 +247,46 @@ export default function HandwritingCamera() {
           </p>
           <h1 className="font-serif text-4xl leading-tight sm:text-6xl">Review your page</h1>
           <p className="mt-4 max-w-lg text-[#53605a]">
-            Your high-resolution handwriting capture is ready. Retake it if the page is not flat
-            or fully inside the frame.
+            {gradingState === "submitting"
+              ? "Keep this page open while we grade your handwriting."
+              : "Your high-resolution handwriting capture is ready. Retake it if the page is not flat or fully inside the frame."}
           </p>
           <div className="mt-8 overflow-hidden rounded-[2rem] border-8 border-white bg-[#d8d1c5] shadow-[0_24px_70px_rgba(49,42,31,0.18)]">
             <img src={previewUrl} alt="Captured handwriting page" className="h-auto w-full" />
           </div>
-          <button
-            type="button"
-            onClick={retake}
-            className="mt-7 w-full rounded-full bg-[#1f2925] px-6 py-4 text-sm font-semibold text-white transition hover:bg-[#35443d]"
-          >
-            Retake image
-          </button>
+          {gradingState === "submitting" && (
+            <div className="mt-6 rounded-2xl bg-[#1f2925] px-5 py-4 text-center text-sm text-white">
+              Grading your handwriting...
+            </div>
+          )}
+          {gradingState === "error" && gradingError && (
+            <div className="mt-6 rounded-2xl border border-[#d7a08e] bg-[#fff7f1] px-5 py-4 text-sm text-[#8f382f]">
+              <p>{gradingError.message}</p>
+              {gradingError.retryable && (
+                <p className="mt-2 text-xs text-[#53605a]">
+                  Your submission was saved. Retake the page to start a new grading attempt.
+                </p>
+              )}
+            </div>
+          )}
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={retake}
+              disabled={gradingState === "submitting"}
+              className="w-full rounded-full border border-[#1f2925] px-6 py-4 text-sm font-semibold text-[#1f2925] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Retake image
+            </button>
+            <button
+              type="button"
+              onClick={gradingState === "error" ? retake : () => void submitGrading()}
+              disabled={gradingState === "submitting"}
+              className="w-full rounded-full bg-[#1f2925] px-6 py-4 text-sm font-semibold text-white transition hover:bg-[#35443d] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {gradingState === "error" ? "Retake and try again" : "Grade handwriting"}
+            </button>
+          </div>
         </section>
       </main>
     );

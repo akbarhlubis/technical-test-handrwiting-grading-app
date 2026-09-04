@@ -1458,6 +1458,18 @@ Streams are stopped on capture, retake, and unmount; preview object URLs are
 revoked when replaced or unmounted. Real camera permission, device, and mobile
 browser behavior still require manual verification.
 
+## Checkpoint B — Submit and Render Grading
+
+Connected the captured JPEG Blob to `POST /api/upload` using `FormData` with
+the seeded lesson and student identifiers. The camera screen now has explicit
+captured, submitting, result, and error states, renders the backend score and
+per-word results, and shows incorrect expected words as visual red correction
+annotations around the unchanged image.
+
+Structured retryable API errors display the backend's friendly saved-submission
+message. The UI does not retry the same saved submission; the user starts a new
+attempt by retaking the image.
+
 **Date:** September 4, 2026
 
 ## Goal
