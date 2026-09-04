@@ -1444,6 +1444,20 @@ retryable application error while preserving the existing submission.
 
 # Day 4 — End-to-End Product Flow
 
+## Checkpoint A — Native Camera Capture
+
+Implemented the browser-native camera screen at `/camera` using
+`navigator.mediaDevices.getUserMedia()` with an ideal rear-camera preference.
+The preview includes visual-only handwriting/page alignment guidance, a QR
+target guide, shutter control, and graceful torch support when the active track
+reports that capability.
+
+Capture uses the video's intrinsic `videoWidth` and `videoHeight`, writes a
+JPEG Blob at quality `0.92`, and shows a local preview without uploading it.
+Streams are stopped on capture, retake, and unmount; preview object URLs are
+revoked when replaced or unmounted. Real camera permission, device, and mobile
+browser behavior still require manual verification.
+
 **Date:** September 4, 2026
 
 ## Goal

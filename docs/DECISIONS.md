@@ -640,6 +640,14 @@ retried.
 
 # Current Decision Summary
 
+## Camera Capture Note
+
+The camera checkpoint uses native `getUserMedia` instead of a third-party
+camera library to keep the browser permission, MediaStream lifecycle, and
+intrinsic-resolution capture behavior explicit and proportional to the
+assignment. The alignment overlay is visual-only and is not drawn into the
+captured canvas image.
+
 | ID | Decision | Status |
 |---|---|---|
 | ADR-001 | Use the Suggested Technology Stack | Accepted |
