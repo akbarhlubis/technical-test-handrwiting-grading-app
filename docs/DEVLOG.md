@@ -1499,6 +1499,9 @@ Supabase lessons table. The prior hardcoded visual slicing was replaced with
 live lesson data; status badges and week labels remain presentation-only because
 the current schema does not store lesson status.
 
+Live Syllabus lesson cards now link to Camera with their lesson ID in the URL.
+Camera submits that selected ID to the upload route, while direct Camera access keeps the demo lesson fallback. The backend remains the source of truth for loading the lesson word list.
+
 ## Checkpoint C — Basic Installable PWA Foundation
 
 Added the native Next.js App Router manifest with standalone display settings,

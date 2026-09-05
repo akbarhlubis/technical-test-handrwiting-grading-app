@@ -11,7 +11,6 @@ import type {
 type CameraState = "initializing" | "active" | "denied" | "unavailable" | "captured";
 type GradingState = "idle" | "submitting" | "result" | "error";
 
-const LESSON_ID = "865dc30c-a821-4589-b088-a4a96d883541";
 const STUDENT_ID = "lucas-primary-2";
 
 type TorchTrack = MediaStreamTrack & {
@@ -62,7 +61,7 @@ function isUploadSuccessResponse(value: unknown): value is UploadSuccessResponse
   );
 }
 
-export default function HandwritingCamera() {
+export default function HandwritingCamera({ lessonId }: { lessonId: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraState, setCameraState] = useState<CameraState>("initializing");
@@ -195,7 +194,7 @@ export default function HandwritingCamera() {
 
     const formData = new FormData();
     formData.append("image", capturedBlob, "handwriting.jpg");
-    formData.append("lessonId", LESSON_ID);
+    formData.append("lessonId", lessonId);
     formData.append("studentId", STUDENT_ID);
 
     try {
