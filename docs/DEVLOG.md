@@ -1470,6 +1470,14 @@ Structured retryable API errors display the backend's friendly saved-submission
 message. The UI does not retry the same saved submission; the user starts a new
 attempt by retaking the image.
 
+## Checkpoint C — Basic Installable PWA Foundation
+
+Added the native Next.js App Router manifest with standalone display settings,
+application metadata, mobile viewport configuration, and local 192px/512px
+PNG icons. No service worker or offline caching was added; the grading flow
+depends on live camera, backend, Storage, and AI services. Manifest and icon
+installability still require manual browser/device verification.
+
 **Date:** September 4, 2026
 
 ## Goal
