@@ -86,9 +86,11 @@ export function normalizeGradingResults(
     });
   }
 
-  if (byWord.size !== expected.length) {
-    throw new Error("Gemini omitted an expected word.");
-  }
-
-  return expected.map((word) => byWord.get(word)!);
+  return expected.map((word) =>
+    byWord.get(word) ?? {
+      characterName: word,
+      recognizedText: null,
+      isCorrect: false,
+    },
+  );
 }
