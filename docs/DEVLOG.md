@@ -1486,6 +1486,14 @@ Refined the Dashboard and Syllabus top shell to use the shared
 welcome, notification, student context, and P2 badge treatment while keeping
 their page-specific content separate.
 
+## Screen 4 — Results / History UI
+
+Implemented the Results screen from the technical-assignment mockup with a
+hardcoded score summary, Needs Review state, and semantic historical matrix for
+the three assignment vocabulary words. Green and red states remain text- and
+icon-distinguishable, and the matrix scrolls within its card on narrow screens.
+Live Supabase history integration remains the next step.
+
 ## Checkpoint C — Basic Installable PWA Foundation
 
 Added the native Next.js App Router manifest with standalone display settings,
