@@ -25,7 +25,7 @@ export default function ScoreSummary({
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#b9d1bd]">Test result</p>
           <p className="mt-3 font-serif text-2xl sm:text-3xl">{correctCount}/{totalCount} correct</p>
           <p className="mt-4 text-sm text-[#d0ddd1]">Graded {gradedAt}</p>
-          <p className="mt-1 text-sm text-[#d0ddd1]">{reviewCount} characters need review</p>
+          <p className="mt-1 text-sm text-[#d0ddd1]">{reviewCount} {reviewCount === 1 ? "character" : "characters"} need review</p>
         </div>
       </div>
     </section>

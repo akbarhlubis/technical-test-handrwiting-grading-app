@@ -1,6 +1,6 @@
 export type HistoryAttempt = {
   date: string;
-  results: boolean[];
+  results: (boolean | null)[];
 };
 
 type ResultsMatrixProps = {
@@ -24,7 +24,9 @@ export default function ResultsMatrix({ words, attempts }: ResultsMatrixProps) {
             <th scope="row" className="sticky left-0 bg-white px-5 py-5 font-serif text-2xl font-normal text-[#29483c] sm:px-6">{word}</th>
             {attempts.map((attempt) => {
               const correct = attempt.results[wordIndex];
-              return <td key={attempt.date} className="px-4 py-5 text-center"><span className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-lg font-bold ${correct ? "bg-[#e2eee3] text-[#347052]" : "bg-[#f7e2d9] text-[#a84d39]"}`} aria-label={correct ? `${word} correct on ${attempt.date}` : `${word} incorrect on ${attempt.date}`}>{correct ? "✓" : "×"}</span></td>;
+              const missing = correct === null || correct === undefined;
+              const label = missing ? `${word} not recorded on ${attempt.date}` : correct ? `${word} correct on ${attempt.date}` : `${word} incorrect on ${attempt.date}`;
+              return <td key={attempt.date} className="px-4 py-5 text-center"><span className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-lg font-bold ${missing ? "bg-[#f1f3ef] text-[#9aa8a0]" : correct ? "bg-[#e2eee3] text-[#347052]" : "bg-[#f7e2d9] text-[#a84d39]"}`} aria-label={label}>{missing ? "—" : correct ? "✓" : "×"}</span></td>;
             })}
           </tr>)}
         </tbody>

@@ -1488,11 +1488,16 @@ their page-specific content separate.
 
 ## Screen 4 — Results / History UI
 
-Implemented the Results screen from the technical-assignment mockup with a
-hardcoded score summary, Needs Review state, and semantic historical matrix for
-the three assignment vocabulary words. Green and red states remain text- and
-icon-distinguishable, and the matrix scrolls within its card on narrow screens.
-Live Supabase history integration remains the next step.
+The Results screen now reads real Supabase grading history server-side. The
+latest submission drives the score summary, recent submissions drive the
+oldest-to-newest matrix columns, and `character_results` drive the correctness
+cells. Empty and safe error states replace the earlier hardcoded slicing data;
+the shared presentation components remain unchanged in responsibility.
+
+Syllabus lesson title, MOE level, and vocabulary now load server-side from the
+Supabase lessons table. The prior hardcoded visual slicing was replaced with
+live lesson data; status badges and week labels remain presentation-only because
+the current schema does not store lesson status.
 
 ## Checkpoint C — Basic Installable PWA Foundation
 
