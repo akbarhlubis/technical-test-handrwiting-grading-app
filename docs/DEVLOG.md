@@ -1494,6 +1494,10 @@ oldest-to-newest matrix columns, and `character_results` drive the correctness
 cells. Empty and safe error states replace the earlier hardcoded slicing data;
 the shared presentation components remain unchanged in responsibility.
 
+Results history now groups recent attempts by lesson so each lesson keeps its
+own authoritative vocabulary axis. The global latest submission still drives
+the summary, while each lesson renders its own history matrix.
+
 Syllabus lesson title, MOE level, and vocabulary now load server-side from the
 Supabase lessons table. The prior hardcoded visual slicing was replaced with
 live lesson data; status badges and week labels remain presentation-only because
