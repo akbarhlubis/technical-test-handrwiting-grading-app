@@ -653,6 +653,11 @@ recomputing it in the browser. Red correction annotations are intentionally
 UI-level placement because the backend currently returns no OCR coordinates;
 the captured image itself remains unchanged.
 
+The installable PWA foundation uses Next.js-native manifest and viewport
+metadata with local PNG icons. A service worker and offline caching are
+deliberately excluded because they are outside the current assignment scope
+and the grading workflow depends on live services.
+
 | ID | Decision | Status |
 |---|---|---|
 | ADR-001 | Use the Suggested Technology Stack | Accepted |
