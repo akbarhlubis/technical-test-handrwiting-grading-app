@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import type { MoeLevel } from "@/lib/syllabus/level";
 
 type LessonRow = {
   id: string;
@@ -24,7 +25,7 @@ export function normalizeLesson(row: LessonRow): SyllabusLesson {
   };
 }
 
-export async function getLessons(level = "P2"): Promise<SyllabusLesson[]> {
+export async function getLessons(level: MoeLevel = "P2"): Promise<SyllabusLesson[]> {
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("lessons")

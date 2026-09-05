@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { SyllabusLesson } from "@/lib/syllabus/get-lessons";
+import { SYLLABUS_LEVELS, type MoeLevel } from "@/lib/syllabus/level";
 
 type LessonStatus = "Pending Practice" | "Completed" | "Needs Revision";
 
@@ -23,12 +24,12 @@ function getPresentationStatus(index: number): LessonStatus {
   return index === 0 ? "Pending Practice" : "Completed";
 }
 
-export default function SyllabusContent({ lessons, hasError = false }: { lessons: SyllabusLesson[]; hasError?: boolean }) {
+export default function SyllabusContent({ lessons, selectedLevel, hasError = false }: { lessons: SyllabusLesson[]; selectedLevel: MoeLevel; hasError?: boolean }) {
   const [expandedLessonId, setExpandedLessonId] = useState(lessons[0]?.id ?? "");
 
   return <>
-    <header className="py-8 sm:py-10"><div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#b5573d]">Learning plan</p><h1 className="mt-2 font-serif text-4xl leading-tight tracking-tight sm:text-5xl">MOE Primary 2<br />Syllabus</h1><p className="mt-3 text-sm text-[#809087]">{lessons.length} {lessons.length === 1 ? "Lesson" : "Lessons"} Total</p></div></header>
-    <section aria-label="Primary level selector" className="grid grid-cols-6 gap-2 rounded-2xl border border-[#dce3dc] bg-white p-2 shadow-sm">{["P1", "P2", "P3", "P4", "P5", "P6"].map((level) => <button key={level} type="button" aria-pressed={level === "P2"} className={"rounded-xl py-2.5 text-xs font-bold transition " + (level === "P2" ? "bg-[#29483c] text-white shadow-sm" : "text-[#8b9b92] hover:bg-[#edf2ed]")}>{level}</button>)}</section>
+    <header className="py-8 sm:py-10"><div><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#b5573d]">Learning plan</p><h1 className="mt-2 font-serif text-4xl leading-tight tracking-tight sm:text-5xl">MOE Primary {selectedLevel.slice(1)}<br />Syllabus</h1><p className="mt-3 text-sm text-[#809087]">{lessons.length} {lessons.length === 1 ? "Lesson" : "Lessons"} Total</p></div></header>
+    <section aria-label="Primary level selector" className="grid grid-cols-6 gap-2 rounded-2xl border border-[#dce3dc] bg-white p-2 shadow-sm">{SYLLABUS_LEVELS.map((level) => <Link key={level} href={"/syllabus?level=" + level} aria-current={level === selectedLevel ? "page" : undefined} className={"rounded-xl py-2.5 text-center text-xs font-bold transition " + (level === selectedLevel ? "bg-[#29483c] text-white shadow-sm" : "text-[#8b9b92] hover:bg-[#edf2ed]")}>{level}</Link>)}</section>
     <section className="mt-9"><div className="flex items-end justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#83948b]">Course outline</p><h2 className="mt-1 font-serif text-3xl">Your lessons</h2></div><span className="text-xs font-semibold text-[#83948b]">2026</span></div>
       {hasError ? <p className="mt-5 rounded-[1.7rem] border border-dashed border-[#e1c9c0] bg-white px-5 py-8 text-sm text-[#a84d39]">We couldn&apos;t load the syllabus right now.</p> : lessons.length === 0 ? <p className="mt-5 rounded-[1.7rem] border border-dashed border-[#cdd9cf] bg-white px-5 py-8 text-sm text-[#809087]">No syllabus lessons available for this level yet.</p> : <div className="mt-5 space-y-4">{lessons.map((lesson, index) => { const expanded = expandedLessonId === lesson.id; return <article key={lesson.id} className={"overflow-hidden rounded-[1.7rem] border bg-white shadow-sm transition " + (expanded ? "border-[#b7cdbc]" : "border-[#dce3dc]")}>
         <button type="button" aria-expanded={expanded} onClick={() => setExpandedLessonId(expanded ? "" : lesson.id)} className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b5573d]">Week {index + 4}</p><h3 className="mt-2 truncate font-serif text-2xl text-[#29483c] sm:text-3xl">{lesson.title}</h3><p className="mt-1 text-xs text-[#809087]">{lesson.level}</p></div><div className="flex shrink-0 items-center gap-3 text-[#809087]"><StatusPill status={getPresentationStatus(index)} /><ChevronIcon expanded={expanded} /></div></button>
