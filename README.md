@@ -33,6 +33,23 @@ The primary workflow is:
 The implementation prioritizes a complete, understandable grading flow rather
 than claiming perfect handwriting-recognition accuracy.
 
+## Application Preview
+
+The main user flow is shown below, from lesson selection through grading
+feedback and history.
+
+| Dashboard | Syllabus |
+| --- | --- |
+| <img src="docs/screenshot/chrome_poZkSGk4VC.png" width="380" alt="TingXie HERO Dashboard showing student progress and upcoming lesson" /> | <img src="docs/screenshot/chrome_yzxhUjNvVU.png" width="380" alt="TingXie HERO Syllabus showing the P2 lesson and vocabulary" /> |
+
+| Camera / Handwriting Submission | Immediate Grading Feedback |
+| --- | --- |
+| <img src="docs/screenshot/chrome_YugJvX6VIZ.png" width="380" alt="TingXie HERO camera review screen with captured handwriting and grading actions" /> | <img src="docs/screenshot/chrome_XpdCJvmoKd.png" width="380" alt="TingXie HERO grading feedback showing word-level results" /> |
+
+**Results History**
+
+<img src="docs/screenshot/chrome_PsJkNA8zrd.png" width="760" alt="TingXie HERO Results history showing lesson score summary and historical character results" />
+
 ## Implemented Features
 
 ### Dashboard
