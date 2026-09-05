@@ -196,7 +196,7 @@ application boundary.
 
 # ADR-004 — Use Structured AI Output and Deterministic Application Scoring
 
-**Status:** Accepted in principle  
+**Status:** Accepted and implemented
 **Proposed:** September 1, 2026  
 **Reviewed:** September 3, 2026
 
@@ -260,8 +260,10 @@ calling Gemini.
 
 The application needs additional schema validation and scoring logic.
 
-The exact Gemini response schema remains subject to implementation validation
-when Gemini integration is introduced.
+The structured response schema is implemented and validated in the grading
+pipeline. Gemini recognition remains probabilistic input; validation,
+normalization, deterministic scoring, and persistence remain application
+responsibilities.
 
 ---
 
@@ -616,8 +618,8 @@ database access patterns.
 
 The upload Route Handler now loads `lessons.word_list`, sends the uploaded
 image to the server-side Gemini client using structured JSON output, ignores
-invented words, rejects omitted or unusable expected-word results, calculates
-the score in application code, and persists `character_results` plus
+invented words, conservatively normalizes omitted expected words as incorrect,
+calculates the score in application code, and persists `character_results` plus
 `submissions.score`.
 
 The model is currently `gemini-3.5-flash` because the previously specified
@@ -637,6 +639,58 @@ typed retryable application error; malformed output and other failures are not
 retried.
 
 Gemini model selection is environment-configurable while grading and output contracts remain model-independent. Explicit configuration is preferred over automatic multi-model fallback so runtime behavior stays predictable.
+
+## ADR-010 - Normalize Probabilistic Gemini Output Conservatively
+
+**Status:** Accepted and implemented
+
+`lessons.word_list` remains authoritative. Gemini results for unexpected
+words are ignored, duplicate expected-word results and malformed types remain
+invalid, and omitted expected words are synthesized as:
+
+    characterName: expectedWord
+    recognizedText: null
+    isCorrect: false
+
+This keeps the complete expected vocabulary as the scoring denominator while
+treating missing recognition conservatively. External AI output is input to the
+application, not a replacement for domain data or deterministic business
+rules.
+
+## ADR-011 - Keep Gemini Model Selection Configurable
+
+**Status:** Accepted and implemented
+
+The server-side `GEMINI_MODEL` setting overrides the `gemini-3.5-flash`
+default. Explicit configuration isolates provider-specific choices from
+grading logic without adding an automatic fallback chain. This keeps runtime
+behavior predictable and does not remove provider quota or availability
+constraints.
+
+## ADR-012 - Use URL State for Syllabus Level Selection
+
+**Status:** Accepted and implemented
+
+The Syllabus route uses `/syllabus?level=P1` through `/syllabus?level=P6`.
+Supported values are resolved server-side, lessons are loaded by
+`moe_level`, and missing or invalid values default to P2. URL state is
+server-readable, refresh-safe, shareable, and avoids unnecessary global state
+or localStorage.
+
+## ADR-013 - Carry Lesson Context in the URL
+
+**Status:** Accepted and implemented
+
+Syllabus links to `/camera?lessonId=<lesson.id>`. Camera passes that value to
+`POST /api/upload`, where the backend loads the authoritative
+`lessons.word_list`. Direct Camera access retains the demo fallback lesson.
+
+## Transient Provider Failure Handling
+
+Temporary Gemini service-unavailable failures use bounded retry with the
+existing implementation's three total attempts and approximately one- and
+two-second backoff intervals with jitter. Malformed output and other
+non-transient failures are not blindly retried.
 
 ---
 
@@ -665,12 +719,12 @@ and the grading workflow depends on live services.
 | ADR-001 | Use the Suggested Technology Stack | Accepted |
 | ADR-002 | Build Highest-Risk Vertical Slice Before UI Polish | Accepted |
 | ADR-003 | Keep Gemini Communication Server-Side | Accepted |
-| ADR-004 | Structured AI Output + Deterministic Scoring | Accepted in principle |
+| ADR-004 | Structured AI Output + Deterministic Scoring | Accepted and implemented |
 | ADR-005 | Deploy Early | Accepted |
 | ADR-006 | Establish Automated Testing Early | Accepted |
 | ADR-007 | Keep AI-Generated Changes Reviewable | Accepted |
 | ADR-008 | Keep Initial Supabase Integration Minimal | Accepted |
-| ADR-009 | Complete Server-Side Grading Vertical Slice | Accepted for checkpoint; production hardening pending |
+| ADR-009 | Complete Server-Side Grading Vertical Slice | Accepted; production hardening pending |
 
 ---
 

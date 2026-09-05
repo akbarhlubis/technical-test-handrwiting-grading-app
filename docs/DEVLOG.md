@@ -1595,16 +1595,16 @@ No major functionality should be introduced unless required to complete or fix t
 
 ### Core Workflow
 
-- [ ] Dashboard works
-- [ ] Syllabus works
-- [ ] Camera works
-- [ ] Image submission works
-- [ ] Gemini processing works
-- [ ] Results are persisted
-- [ ] Score is calculated
-- [ ] Score is displayed
-- [ ] Correction overlay works
-- [ ] Results history works
+- [x] Dashboard works
+- [x] Syllabus works
+- [x] Camera works
+- [x] Image submission works
+- [x] Gemini processing works
+- [x] Results are persisted
+- [x] Score is calculated
+- [x] Score is displayed
+- [x] Correction overlay works
+- [x] Results history works
 
 ### Production
 
@@ -1627,13 +1627,13 @@ No major functionality should be introduced unless required to complete or fix t
 
 ### Documentation
 
-- [ ] README finalized
+- [x] README finalized
 - [ ] PLAN updated
-- [ ] DEVLOG finalized
-- [ ] DECISIONS finalized
-- [ ] Known limitations documented
-- [ ] Live deployment URL added
-- [ ] Setup instructions verified
+- [x] DEVLOG finalized
+- [x] DECISIONS finalized
+- [x] Known limitations documented
+- [x] Live deployment URL added
+- [x] Setup instructions documented
 
 ### Submission
 
@@ -1645,50 +1645,244 @@ No major functionality should be introduced unless required to complete or fix t
 
 ---
 
-# Final Reflection
+# Day 5 - Final Stabilization, Debugging, and Reflection
 
-To be completed after the implementation is stabilized.
+## Final Product Flow
 
-## What I Learned
+The completed vertical slice became:
 
-...
+    Syllabus
+        |
+    Select Level
+        |
+    Select Lesson
+        |
+    Camera
+        |
+    Capture
+        |
+    Upload
+        |
+    Backend
+        |
+    Gemini
+        |
+    Normalize
+        |
+    Score
+        |
+    Persist
+        |
+    Immediate Feedback
+        |
+    Results History
 
-## What Was Most Challenging
+## Dynamic P1-P6 Syllabus
 
-...
+The original P1-P6 controls were visual-only. They now use URL query state:
+`/syllabus?level=P1` through `/syllabus?level=P6`. The server resolves only
+supported levels, filters Supabase lessons by `moe_level`, and defaults
+missing or invalid values to P2. Levels without lessons show an empty state
+instead of fabricated lesson data.
 
-## How My Understanding Changed
+This reinforced that UI controls should represent real application behavior
+when a requirement implies interaction.
 
-...
+## Dynamic Lesson Context
 
-## How My Laravel Experience Helped
+An earlier Camera implementation used a demo lesson. The final flow carries a
+real lesson ID:
 
-...
+    Syllabus
+        |
+    lessonId
+        |
+    Camera
+        |
+    Upload API
+        |
+    Backend lesson lookup
 
-## Where the Laravel Mental Model Did Not Apply
+The backend still loads the authoritative word list, rather than trusting
+expected words supplied by the browser.
 
-...
+## Real Gemini Omitted-Word Bug
 
-## How AI Accelerated Development
+During manual testing with a newly created lesson, Gemini returned only part of
+the expected lesson word list. The original normalizer treated an omission as
+a fatal error, which caused grading to fail even though partial structured
+data was usable.
 
-...
+The final behavior is:
 
-## Where Human Review Was Important
+    lessons.word_list
+        |
+    Authoritative expected words
 
-...
+    Gemini returned expected word
+        |
+    Normalize returned result
 
-## AI Suggestions I Rejected or Modified
+    Gemini omitted expected word
+        |
+    recognizedText = null
+        |
+    isCorrect = false
 
-...
+Invented words are ignored. Malformed or duplicate expected-word results still
+fail validation. This is conservative fallback handling: missing recognition
+is incorrect, and the complete domain word list remains the score denominator.
 
-## What I Would Improve With More Time
+The issue exposed overly strict, fragile handling of probabilistic external
+responses. An incomplete AI response should not necessarily crash a recoverable
+grading workflow.
 
-...
+## Source-of-Truth Lesson
 
-## What I Would Change for a Production System
+The omitted-word bug reinforced the central architecture boundary:
 
-...
+    Domain data
+        |
+    lessons.word_list
+        |
+    Authoritative expected vocabulary
 
-## Final Takeaway
+Gemini provides observations about the image. Application code owns
+validation, normalization, scoring, and persistence rules. Keeping those
+responsibilities in the application makes behavior more predictable and
+testable.
 
-...
+## Gemini Model Configuration Learning
+
+Provider and free-plan availability constraints were encountered during
+development. This motivated moving model selection behind `GEMINI_MODEL`, with
+`gemini-3.5-flash` as the current default.
+
+This began as a practical availability response and reinforced a broader
+lesson: provider-specific configuration that may change independently from
+business logic should be isolated from that logic. `GEMINI_MODEL` does not
+solve quotas and does not automatically switch models; explicit configuration
+keeps runtime behavior predictable.
+
+## Retry Learning
+
+Transient provider availability failures may justify bounded retry. Malformed
+output and deterministic validation failures should not automatically be
+retried. Retry is a failure-handling strategy, not a universal error solution.
+
+## Automated and Manual Testing
+
+Automated tests provided regression confidence around deterministic logic,
+validation, scoring, route behavior, and external-service health checks.
+The Gemini omission problem was discovered through a real manual end-to-end
+workflow with a newly created lesson, which exposed an assumption not covered
+by the earlier test suite.
+
+Automated tests protect known expectations; manual integration testing can
+expose assumptions created by real provider behavior. The final workflow
+benefits from both.
+
+## Learning Next.js from Laravel
+
+My primary production experience is Laravel, MySQL, JavaScript, and
+traditional server-rendered applications. This assignment provided a concrete
+reason to learn React, Next.js, Supabase, Gemini, Vercel, and browser camera
+APIs.
+
+Laravel concepts were useful as an initial learning bridge, but the mental
+model evolved toward filesystem routing, Server and Client Components, Route
+Handlers, browser/server trust boundaries, URL-driven state, and server-side
+secret handling. Laravel and Next.js are not architectural equivalents; the
+comparison was useful for learning, not for treating the stacks as
+interchangeable.
+
+## Learning Through a Real Problem
+
+These technologies became more concrete because they were used to solve an actual end-to-end problem rather than studied independently through tutorials.
+The assignment required combining UI, browser APIs, backend validation, database, storage, external AI, error handling, testing, and deployment.
+That made the learning process practical and memorable, and provided a useful reason to learn a new stack.
+
+## AI-Assisted Engineering Workflow
+
+The working loop was:
+
+    Requirement / Problem
+            |
+    Discuss & Analyze
+            |
+    Research / Documentation
+            |
+    Understand Alternatives & Trade-offs
+            |
+    Engineering Decision
+            |
+    Scoped Codex Implementation
+            |
+    Inspect Changes
+            |
+    Automated Tests
+            |
+    Manual Verification
+            |
+    Problem?
+       /       \
+     Yes        No
+      |          |
+    Analyze    Accept
+      |
+    Refine Decision
+      |
+    Implement Fix
+      |
+    Regression Test
+
+ChatGPT was used primarily for requirement interpretation, research
+assistance, architecture discussion, unfamiliar-concept explanations,
+alternative comparison, implementation review, and challenging assumptions.
+Codex was used for codebase exploration, scoped implementation, refactoring,
+repetitive code changes, and testing assistance.
+
+Official documentation and technical references were used to validate
+important or unfamiliar behavior. The developer made final decisions,
+reviewed changes, ran and interpreted tests, manually tested product behavior,
+accepted or rejected proposals, and remained responsible for the final code.
+AI-generated code was treated as a proposal, not accepted blindly.
+
+The omitted-word bug illustrates the loop:
+
+    Manual testing
+        |
+    Unexpected Gemini response
+        |
+    Analyze the assumption
+        |
+    Reconsider source of truth
+        |
+    Define safer normalization
+        |
+    Codex implementation
+        |
+    Regression testing
+
+The important lesson was not simply how to use AI tools, but how to maintain
+engineering responsibility while using AI-assisted development.
+
+## Separate Laravel Experiment
+
+After the primary implementation, I also started a separate Laravel + Inertia
++ React + Supabase experiment to map some of the concepts back into a stack
+closer to my production experience. This experiment is intentionally separate
+from the official submission, is not part of the assignment deliverable, and
+is not guaranteed complete.
+
+## Final Reflection
+
+The assignment showed that a new framework becomes easier to understand when
+it is used to solve a real problem. It also reinforced that external AI is
+probabilistic input, while domain data and deterministic business rules should
+remain under application control.
+
+Error handling is part of architecture, not merely an afterthought.
+Automated tests and manual verification solve different problems, and both
+were necessary here. AI development tools are most useful inside a deliberate
+engineering workflow that preserves human review and responsibility.

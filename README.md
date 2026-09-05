@@ -2,176 +2,216 @@
 
 Technical assignment for the Back-End Developer recruitment process.
 
-> Status: In Development  
-> Development Period: September 1–5, 2026
+> Status: Submission Ready
+> Development Period: September 1-5, 2026
 
 ## Live Demo
 
-The application is deployed on Vercel.
-
-**Live Application:** [TingXie HERO](https://technical-test-handrwiting-grading.vercel.app/)
+https://technical-test-handrwiting-grading.vercel.app/
 
 ## Overview
 
-TingXie HERO is a student-focused Chinese handwriting practice and grading application.
+TingXie HERO is a student-focused Chinese handwriting practice and
+AI-assisted grading Progressive Web App.
 
-The intended workflow is:
+The primary workflow is:
 
     Select Lesson
-        ↓
+        |
     Capture Handwriting
-        ↓
+        |
     Submit Image
-        ↓
-    AI-Assisted Grading
-        ↓
+        |
+    AI-Assisted Recognition / Comparison
+        |
+    Application Validation & Scoring
+        |
     Store Result
-        ↓
+        |
     Display Score & Correction Feedback
 
-The application is being developed as a Progressive Web App using a small
-end-to-end vertical slice rather than attempting to implement a complete LMS.
+The implementation prioritizes a complete, understandable grading flow rather
+than claiming perfect handwriting-recognition accuracy.
 
-## Technology Stack
+## Implemented Features
 
-Currently used:
+### Dashboard
 
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Supabase
-- Vitest
-- Playwright
-- Vercel
+- Assignment-aligned demo dashboard
+- Student and progress presentation
 
-Used by the verified backend pipeline:
+### Syllabus
 
-- Gemini
+- Functional P1-P6 level selector
+- URL-query-driven level state
+- Live lessons loaded from Supabase
+- Expandable lesson cards and vocabulary display
+- Lesson-to-Camera navigation
 
-## Current Architecture
+### Camera
 
-Current verified backend foundation:
+- Browser-native getUserMedia capture
+- Rear/environment camera preference
+- Capture preview and retake
+- Upload to the server
 
-    Client
-       ↓
+### Backend
+
+- POST /api/upload
+- Server-side validation
+- Private Supabase Storage
+- Server-side Gemini communication
+- Structured grading output and normalization
+- Deterministic scoring
+- Character-result and submission-score persistence
+
+### Grading Feedback
+
+- Immediate score
+- Correct/incorrect character results
+- Red correction annotations
+
+### Results
+
+- Persisted grading history from Supabase
+- Historical result matrix
+
+### PWA and Deployment
+
+- Native manifest and application icons
+- Installable PWA foundation
+- Vercel deployment
+
+Offline support and service-worker caching are intentionally not included.
+
+## Final Architecture
+
+    Browser
+        |
+    Next.js UI / Client Components
+        |
     Next.js Route Handler
-       ↓
+        |
     Server-Side Application Logic
-       ↓
-    Supabase
-
-Target grading workflow:
-
-    Camera Capture
-       ↓
-    Next.js Backend
-       ↓
-    Supabase Storage
-       ↓
+        |
+    Supabase Private Storage
+        |
     Gemini
-       ↓
-    Structured Grading Result
-       ↓
-    Application Validation
-       ↓
-    Supabase Database
-       ↓
-    Result & Correction UI
+        |
+    Application Validation / Normalization
+        |
+    Deterministic Scoring
+        |
+    Supabase PostgreSQL
+        |
+    Result UI / History
 
-The target architecture may still evolve as implementation exposes actual
-constraints.
+Privileged Supabase operations and Gemini communication remain server-side.
+The browser receives application responses, not provider credentials or
+privileged Supabase keys.
 
-The upload checkpoint is implemented as a server-side flow:
+## Grading Design
 
-    multipart/form-data
-        -> POST /api/upload
-        -> Server validation
-        -> Private Storage upload
-        -> Load lesson expected words
-        -> Gemini structured grading
-        -> Normalize results and calculate score
-        -> Persist character results and score
+lessons.word_list is the authoritative expected vocabulary. Gemini performs
+recognition and comparison, but the application owns validation, normalization,
+scoring, and persistence.
 
-## Current Progress
+The application ignores invented words, preserves expected-word order, and
+conservatively synthesizes omitted expected words as incorrect with no
+recognized text. The score denominator remains the complete authoritative
+lesson word list. Gemini does not calculate the final score.
 
-### Day 1 — Requirement Understanding & Preparation
+## Gemini Configuration
 
-- [x] Reviewed technical assignment
-- [x] Identified core student workflow
-- [x] Researched initial architecture
-- [x] Prepared repository and development documentation
-- [x] Defined development priorities
+GEMINI_API_KEY is required and is a server-side secret.
 
-### Day 2 — Next.js Initialization & Research
+GEMINI_MODEL is optional and server-side. It defaults to gemini-3.5-flash and
+allows model configuration to change without modifying grading application
+logic. The selected model must support this pipeline's image input and
+structured JSON response contract. There is no automatic model fallback.
 
-- [x] Initialized Next.js application
-- [x] Used current `create-next-app` recommended defaults
-- [x] Configured TypeScript, ESLint, Tailwind CSS, and App Router
-- [x] Studied Next.js routing and server/client boundaries
-- [x] Performed initial Supabase research
-- [x] Performed initial Gemini research
+## Local Setup
 
-### Day 3 — Backend Foundation
+Install dependencies:
 
-- [x] Completed initial Vercel deployment
-- [x] Connected Next.js to Supabase
-- [x] Added server-side Supabase client
-- [x] Added Supabase health endpoint
-- [x] Verified real Supabase connectivity
-- [x] Added Vitest testing foundation
-- [x] Added Playwright testing foundation
-- [x] Added real Supabase integration test
-- [x] Verified lint and production build
-- [ ] Finalize database schema and RLS strategy
-- [ ] Complete Storage and database happy-path verification
-- [x] Implemented `POST /api/upload` validation and persistence path
-- [x] Added Gemini grading with structured output validation
-- [x] Added deterministic score calculation and persistence
-- [ ] Verify upload happy path with a real handwriting image
-- [ ] Complete backend vertical slice
+~~~bash
+npm install
+~~~
 
-### Day 4 — Product Flow
+Copy the variable names from .example.env into the local environment and set
+the appropriate values. Never commit secret values.
 
-- [ ] Camera capture
-- [ ] Dashboard
-- [ ] Syllabus
-- [ ] Submission workflow
-- [ ] Grading result
-- [ ] Correction feedback
-- [ ] Results history
+Start the development server:
 
-### Day 5 — Stabilization & Submission
+~~~bash
+npm run dev
+~~~
 
-- [ ] End-to-end testing
-- [ ] Security review
-- [ ] PWA verification
-- [ ] Deployment verification
-- [ ] Documentation cleanup
-- [ ] Final submission
+## Environment Variables
+
+From .example.env:
+
+- SUPABASE_URL: server-side Supabase URL
+- SUPABASE_PUBLISHABLE_KEY: publishable Supabase key
+- SUPABASE_SECRET_KEY: server-only privileged key
+- SUPABASE_JWKS_URL: Supabase JWKS configuration
+- GEMINI_API_KEY: server-only Gemini secret
+- GEMINI_MODEL: optional server-only model override; defaults to gemini-3.5-flash
+
+The secret key variables must not use NEXT_PUBLIC_ names or be exposed to the
+browser.
 
 ## Testing
 
-The project currently uses:
-
-- **Vitest** for unit-level application logic.
-- **Playwright** for integration and end-to-end testing.
-
-Available commands:
-
-```bash
+~~~bash
 npm test
 npm run test:unit
 npm run test:e2e
 npm run lint
 npm run build
-```
+~~~
 
-The upload endpoint has automated integration coverage for invalid requests.
-The connected project contains a seeded lesson for manual happy-path testing,
-but a real handwriting upload remains intentionally unautomated because it
-creates Storage/database records and depends on subjective external AI output.
-The project also requires an RLS policy review before production use.
+Vitest covers deterministic application logic. Playwright covers the running
+Next.js application, Route Handlers, and integration behavior.
 
-## Gemini Configuration
+## Known Limitations and Production Hardening
 
-`GEMINI_API_KEY` is required and must remain a server-side secret. `GEMINI_MODEL` is optional and server-side; it defaults to `gemini-3.5-flash` and allows the provider model to be changed through environment configuration without editing application source code. The selected model must support this grading pipeline's image input and structured JSON response contract.
+The assignment scope intentionally does not include:
+
+- Authentication
+- Per-user authorization and a complete ownership model
+- Rate limiting and abuse prevention
+- Offline service-worker grading
+
+The current Supabase application tables have Row Level Security disabled. The
+application uses server-side privileged operations for the primary workflow,
+but a production deployment would require a complete authentication, ownership, RLS-policy, rate-limiting, and abuse-prevention design. RLS was not enabled during this assignment because policies must be designed for the eventual ownership model.
+
+AI handwriting recognition is probabilistic, so accuracy is not guaranteed.
+Correction annotations are UI-level feedback because the grading response does not contain OCR coordinates. The PWA foundation is installable but does not implement offline grading because grading depends on online services.
+
+## AI-Assisted Engineering Workflow
+
+The development workflow was:
+
+    Requirement / Problem
+        |
+    Research & Architecture Discussion
+        |
+    Documentation / Technical Validation
+        |
+    Engineering Decision
+        |
+    Scoped Implementation with Codex
+        |
+    Code Review
+        |
+    Automated Testing
+        |
+    Manual Verification
+        |
+    Refinement when necessary
+
+ChatGPT was used for requirement analysis, technical research assistance, architecture discussion, trade-off analysis, implementation review, and challenging assumptions. Codex was used for codebase exploration, scoped implementation assistance, refactoring, repetitive development work, and testing assistance.
+
+Official documentation and technical references were consulted when unfamiliar or important framework and provider behavior required validation. AI-generated code and suggestions were treated as proposals, not automatically accepted solutions. The developer remained responsible for engineering decisions, understanding the architecture, reviewing code, manual verification, testing, and the final submission.
