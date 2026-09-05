@@ -1,11 +1,13 @@
-import { createGeminiServerClient } from "@/lib/gemini/server";
+import {
+  createGeminiServerClient,
+  getGeminiModel,
+} from "@/lib/gemini/server";
 import {
   gradingResponseSchema,
   normalizeGradingResults,
   type NormalizedGradingResult,
 } from "@/lib/grading/schema";
 
-const GRADING_MODEL = "gemini-3.5-flash";
 const MAX_ATTEMPTS = 3;
 const INITIAL_BACKOFF_MS = 1_000;
 const MAX_JITTER_MS = 100;
@@ -67,7 +69,7 @@ export async function gradeHandwriting(
   const imageBase64 = Buffer.from(await image.arrayBuffer()).toString("base64");
   const ai = createGeminiServerClient();
   const request = {
-    model: GRADING_MODEL,
+    model: getGeminiModel(),
     contents: [
       {
         inlineData: {

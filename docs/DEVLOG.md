@@ -1440,6 +1440,9 @@ handles only that temporary availability class with three bounded attempts and
 approximately one- and two-second backoff delays. Exhaustion returns a stable
 retryable application error while preserving the existing submission.
 
+Model selection is now server-side environment-configurable through
+`GEMINI_MODEL`, with the verified `gemini-3.5-flash` default. This improves operational flexibility after provider/model quota and availability constraints.
+
 ---
 
 # Day 4 — End-to-End Product Flow

@@ -12,6 +12,7 @@ vi.mock("@/lib/gemini/server", () => ({
   createGeminiServerClient: () => ({
     models: { generateContent },
   }),
+  getGeminiModel: () => "gemini-3.5-flash",
 }));
 
 const image = () => new File(["image"], "handwriting.png", { type: "image/png" });

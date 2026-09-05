@@ -171,3 +171,7 @@ The connected project contains a seeded lesson for manual happy-path testing,
 but a real handwriting upload remains intentionally unautomated because it
 creates Storage/database records and depends on subjective external AI output.
 The project also requires an RLS policy review before production use.
+
+## Gemini Configuration
+
+`GEMINI_API_KEY` is required and must remain a server-side secret. `GEMINI_MODEL` is optional and server-side; it defaults to `gemini-3.5-flash` and allows the provider model to be changed through environment configuration without editing application source code. The selected model must support this grading pipeline's image input and structured JSON response contract.

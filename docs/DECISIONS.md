@@ -636,6 +636,8 @@ one second and then two seconds with small jitter. Exhausted retries map to a
 typed retryable application error; malformed output and other failures are not
 retried.
 
+Gemini model selection is environment-configurable while grading and output contracts remain model-independent. Explicit configuration is preferred over automatic multi-model fallback so runtime behavior stays predictable.
+
 ---
 
 # Current Decision Summary
