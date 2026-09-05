@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 type NavigationIconProps = { active?: boolean };
+type BottomNavigationProps = { activeItem?: "dashboard" | "syllabus" | "history" };
 
 function HomeIcon({ active }: NavigationIconProps) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" className={`h-5 w-5 ${active ? "fill-current" : "fill-none stroke-current stroke-[1.8]"}`}><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-9Z" /></svg>;
@@ -18,6 +19,10 @@ function SparkIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current stroke-[1.8]"><path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3ZM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z" /></svg>;
 }
 
-export default function BottomNavigation() {
-  return <nav aria-label="Primary navigation" className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#e0e7df] bg-[#fbfaf6]/95 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md"><div className="mx-auto grid max-w-xl grid-cols-4"><Link href="/" aria-current="page" className="flex flex-col items-center gap-1 text-[#29483c]"><HomeIcon active /><span className="text-[10px] font-bold">Dashboard</span></Link><Link href="/syllabus" className="flex flex-col items-center gap-1 text-[#8b9b92] transition hover:text-[#29483c]"><BookIcon /><span className="text-[10px] font-semibold">Syllabus</span></Link><Link href="/results" className="flex flex-col items-center gap-1 text-[#8b9b92] transition hover:text-[#29483c]"><HistoryIcon /><span className="text-[10px] font-semibold">History</span></Link><button type="button" disabled aria-label="Premium is not available yet" className="flex cursor-not-allowed flex-col items-center gap-1 text-[#b7c0ba]"><SparkIcon /><span className="text-[10px] font-semibold">Premium</span></button></div></nav>;
+export default function BottomNavigation({ activeItem = "dashboard" }: BottomNavigationProps) {
+  const dashboardActive = activeItem === "dashboard";
+  const syllabusActive = activeItem === "syllabus";
+  const historyActive = activeItem === "history";
+
+  return <nav aria-label="Primary navigation" className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#e0e7df] bg-[#fbfaf6]/95 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md"><div className="mx-auto grid max-w-xl grid-cols-4"><Link href="/" aria-current={dashboardActive ? "page" : undefined} className={`flex flex-col items-center gap-1 transition ${dashboardActive ? "text-[#29483c]" : "text-[#8b9b92] hover:text-[#29483c]"}`}><HomeIcon active={dashboardActive} /><span className={`text-[10px] ${dashboardActive ? "font-bold" : "font-semibold"}`}>Dashboard</span></Link><Link href="/syllabus" aria-current={syllabusActive ? "page" : undefined} className={`flex flex-col items-center gap-1 transition ${syllabusActive ? "text-[#29483c]" : "text-[#8b9b92] hover:text-[#29483c]"}`}><BookIcon /><span className={`text-[10px] ${syllabusActive ? "font-bold" : "font-semibold"}`}>Syllabus</span></Link><Link href="/results" aria-current={historyActive ? "page" : undefined} className={`flex flex-col items-center gap-1 transition ${historyActive ? "text-[#29483c]" : "text-[#8b9b92] hover:text-[#29483c]"}`}><HistoryIcon /><span className={`text-[10px] ${historyActive ? "font-bold" : "font-semibold"}`}>History</span></Link><button type="button" disabled aria-label="Premium is not available yet" className="flex cursor-not-allowed flex-col items-center gap-1 text-[#b7c0ba]"><SparkIcon /><span className="text-[10px] font-semibold">Premium</span></button></div></nav>;
 }

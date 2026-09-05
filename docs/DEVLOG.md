@@ -1473,6 +1473,19 @@ Structured retryable API errors display the backend's friendly saved-submission
 message. The UI does not retry the same saved submission; the user starts a new
 attempt by retaking the image.
 
+## Screen 2 — Syllabus UI
+
+Implemented the syllabus screen from the technical-assignment mockup with a
+P1-P6 selector, expandable lesson cards, compact vocabulary display, and
+Pending Practice and Completed states. The lesson data is intentionally
+hardcoded during UI slicing, and the shared bottom navigation marks Syllabus
+as active.
+
+Refined the Dashboard and Syllabus top shell to use the shared
+`components/layout/app-header.tsx` component. Both screens now share the same
+welcome, notification, student context, and P2 badge treatment while keeping
+their page-specific content separate.
+
 ## Checkpoint C — Basic Installable PWA Foundation
 
 Added the native Next.js App Router manifest with standalone display settings,
