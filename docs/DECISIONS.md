@@ -610,7 +610,55 @@ database access patterns.
 
 ---
 
+# ADR-009 — Complete Server-Side Grading Vertical Slice
+
+**Status:** Accepted for the technical-assignment backend checkpoint
+
+The upload Route Handler now loads `lessons.word_list`, sends the uploaded
+image to the server-side Gemini client using structured JSON output, ignores
+invented words, rejects omitted or unusable expected-word results, calculates
+the score in application code, and persists `character_results` plus
+`submissions.score`.
+
+The model is currently `gemini-3.5-flash` because the previously specified
+model identifier was unavailable in the configured Gemini API environment. The
+provider boundary and response contract remain explicit so the model can be
+changed without moving credentials into the browser.
+
+If grading fails after the upload row is created, the submission is preserved
+and the client receives a non-sensitive `503` response with the submission ID.
+This supports retry/recovery without orphaning the uploaded image from the
+submission record.
+
+Temporary provider availability failures are retried in the same grading
+attempt with bounded backoff: up to three total calls, waiting approximately
+one second and then two seconds with small jitter. Exhausted retries map to a
+typed retryable application error; malformed output and other failures are not
+retried.
+
+Gemini model selection is environment-configurable while grading and output contracts remain model-independent. Explicit configuration is preferred over automatic multi-model fallback so runtime behavior stays predictable.
+
+---
+
 # Current Decision Summary
+
+## Camera Capture Note
+
+The camera checkpoint uses native `getUserMedia` instead of a third-party
+camera library to keep the browser permission, MediaStream lifecycle, and
+intrinsic-resolution capture behavior explicit and proportional to the
+assignment. The alignment overlay is visual-only and is not drawn into the
+captured canvas image.
+
+The grading result screen consumes the backend score directly rather than
+recomputing it in the browser. Red correction annotations are intentionally
+UI-level placement because the backend currently returns no OCR coordinates;
+the captured image itself remains unchanged.
+
+The installable PWA foundation uses Next.js-native manifest and viewport
+metadata with local PNG icons. A service worker and offline caching are
+deliberately excluded because they are outside the current assignment scope
+and the grading workflow depends on live services.
 
 | ID | Decision | Status |
 |---|---|---|
@@ -622,7 +670,7 @@ database access patterns.
 | ADR-006 | Establish Automated Testing Early | Accepted |
 | ADR-007 | Keep AI-Generated Changes Reviewable | Accepted |
 | ADR-008 | Keep Initial Supabase Integration Minimal | Accepted |
-| Open | Submission Storage and Database Security | Under Review |
+| ADR-009 | Complete Server-Side Grading Vertical Slice | Accepted for checkpoint; production hardening pending |
 
 ---
 

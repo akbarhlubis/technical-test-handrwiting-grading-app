@@ -1,4 +1,9 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import {
+  gradeHandwriting,
+  GradingTemporarilyUnavailableError,
+} from "@/lib/grading/grade-handwriting";
+import { calculateScore } from "@/lib/grading/score";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +91,32 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createSupabaseAdminClient();
+    const { data: lesson, error: lessonError } = await supabase
+      .from("lessons")
+      .select("word_list")
+      .eq("id", lessonId)
+      .maybeSingle();
+
+    if (lessonError) {
+      console.error("Supabase lesson lookup failed.", {
+        code: lessonError.code,
+        message: lessonError.message,
+      });
+      return jsonError("Unable to load lesson.", 500);
+    }
+
+    if (!lesson) {
+      return jsonError("lessonId does not reference an existing lesson.", 400);
+    }
+
+    if (
+      !Array.isArray(lesson.word_list) ||
+      lesson.word_list.some((word: unknown) => typeof word !== "string")
+    ) {
+      console.error("Lesson word list has an invalid shape.");
+      return jsonError("Lesson word list is invalid.", 500);
+    }
+
     const { error: uploadError } = await supabase.storage
       .from(BUCKET_NAME)
       .upload(imagePath, imageValue, {
@@ -127,6 +158,82 @@ export async function POST(request: Request) {
       return jsonError("Unable to create submission.", 500);
     }
 
+    let gradingResults;
+    try {
+      gradingResults = await gradeHandwriting(imageValue, lesson.word_list);
+    } catch (error) {
+      if (error instanceof GradingTemporarilyUnavailableError) {
+        console.error("Handwriting grading is temporarily unavailable.", {
+          code: error.code,
+          submissionId,
+        });
+
+        return Response.json(
+          {
+            error: {
+              code: error.code,
+              message:
+                "We couldn't grade your handwriting right now. Your submission has been saved. Please try again in a moment.",
+              retryable: true,
+            },
+            submissionId,
+          },
+          { status: 503 },
+        );
+      }
+
+      console.error(
+        "Gemini handwriting grading failed.",
+        error instanceof Error ? error.message : "Unknown error",
+      );
+
+      return jsonError("Unable to grade handwriting.", 500);
+    }
+
+    if (gradingResults.length > 0) {
+      const { error: characterResultsError } = await supabase
+        .from("character_results")
+        .insert(
+          gradingResults.map((result) => ({
+            submission_id: submissionId,
+            character_name: result.characterName,
+            recognized_text: result.recognizedText,
+            is_correct: result.isCorrect,
+          })),
+        );
+
+      if (characterResultsError) {
+        console.error("Supabase character result insert failed.", {
+          code: characterResultsError.code,
+          message: characterResultsError.message,
+        });
+
+        return jsonError("Unable to save grading results.", 500);
+      }
+    }
+
+    const score = calculateScore(gradingResults);
+    const { error: scoreError } = await supabase
+      .from("submissions")
+      .update({ score })
+      .eq("id", submissionId);
+
+    if (scoreError) {
+      console.error("Supabase submission score update failed.", {
+        code: scoreError.code,
+        message: scoreError.message,
+      });
+
+      if (gradingResults.length > 0) {
+        await supabase
+          .from("character_results")
+          .delete()
+          .eq("submission_id", submissionId);
+      }
+
+      return jsonError("Unable to save submission score.", 500);
+    }
+
     return Response.json(
       {
         submission: {
@@ -134,8 +241,9 @@ export async function POST(request: Request) {
           studentId,
           lessonId,
           imagePath,
-          score: null,
+          score,
         },
+        results: gradingResults,
       },
       { status: 201 },
     );

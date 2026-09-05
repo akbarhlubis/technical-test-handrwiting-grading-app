@@ -1,4 +1,7 @@
-import { createGeminiServerClient } from "@/lib/gemini/server";
+import {
+  createGeminiServerClient,
+  getGeminiModel,
+} from "@/lib/gemini/server";
 
 export const dynamic = "force-dynamic";
 
@@ -7,7 +10,7 @@ export async function GET() {
     const gemini = createGeminiServerClient();
 
     await gemini.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: getGeminiModel(),
       contents: "Reply with the single word OK.",
     });
 

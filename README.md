@@ -44,7 +44,7 @@ Currently used:
 - Playwright
 - Vercel
 
-Planned for the grading pipeline:
+Used by the verified backend pipeline:
 
 - Gemini
 
@@ -87,7 +87,10 @@ The upload checkpoint is implemented as a server-side flow:
         -> POST /api/upload
         -> Server validation
         -> Private Storage upload
-        -> Pending submissions row
+        -> Load lesson expected words
+        -> Gemini structured grading
+        -> Normalize results and calculate score
+        -> Persist character results and score
 
 ## Current Progress
 
@@ -122,8 +125,9 @@ The upload checkpoint is implemented as a server-side flow:
 - [ ] Finalize database schema and RLS strategy
 - [ ] Complete Storage and database happy-path verification
 - [x] Implemented `POST /api/upload` validation and persistence path
-- [ ] Verify upload happy path with a seeded lesson
-- [ ] Integrate Gemini grading
+- [x] Added Gemini grading with structured output validation
+- [x] Added deterministic score calculation and persistence
+- [ ] Verify upload happy path with a real handwriting image
 - [ ] Complete backend vertical slice
 
 ### Day 4 — Product Flow
@@ -162,8 +166,12 @@ npm run lint
 npm run build
 ```
 
-The upload endpoint currently has automated integration coverage for invalid
-requests. A real successful upload test remains pending because the connected
-Supabase project currently has no lesson rows available for the foreign-key
-requirement. The project also requires an RLS policy review before production
-use.
+The upload endpoint has automated integration coverage for invalid requests.
+The connected project contains a seeded lesson for manual happy-path testing,
+but a real handwriting upload remains intentionally unautomated because it
+creates Storage/database records and depends on subjective external AI output.
+The project also requires an RLS policy review before production use.
+
+## Gemini Configuration
+
+`GEMINI_API_KEY` is required and must remain a server-side secret. `GEMINI_MODEL` is optional and server-side; it defaults to `gemini-3.5-flash` and allows the provider model to be changed through environment configuration without editing application source code. The selected model must support this grading pipeline's image input and structured JSON response contract.

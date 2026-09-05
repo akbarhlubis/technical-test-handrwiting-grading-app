@@ -1407,7 +1407,92 @@ The goal remains to prove the complete backend vertical slice before spending
 significant time on interface polish.
 
 ---
+# Backend Vertical Slice Checkpoint — Upload to Grading
+
+**Date:** September 5, 2026
+
+## Implemented
+
+- Added lesson lookup from `lessons.word_list` before Storage upload.
+- Added server-only Gemini image grading with JSON structured output.
+- Added normalization that preserves lesson order, ignores invented words, and
+  rejects omitted or unusable expected-word results.
+- Added deterministic application scoring with safe empty-list handling.
+- Added persistence for `character_results` and `submissions.score`.
+- Preserved the uploaded submission when Gemini is temporarily unavailable.
+- Added Vitest coverage for normalization and score calculation.
+
+## Verification Notes
+
+The assignment's earlier Gemini model identifier was unavailable in the current
+API environment. The existing health check and grading path therefore use the
+currently verified `gemini-3.5-flash` model. The API key remains server-only.
+
+The connected Supabase project has a seeded lesson, but a real happy-path test
+is kept as a manual operation because it creates external records and depends
+on subjective AI output. Read-only schema verification also reports RLS
+disabled on the relevant public tables; this remains a production blocker and
+was not changed automatically.
+
+Manual grading exposed a real upstream `503 UNAVAILABLE` high-demand response
+after the submission and image had already been saved. The grading module now
+handles only that temporary availability class with three bounded attempts and
+approximately one- and two-second backoff delays. Exhaustion returns a stable
+retryable application error while preserving the existing submission.
+
+Model selection is now server-side environment-configurable through
+`GEMINI_MODEL`, with the verified `gemini-3.5-flash` default. This improves operational flexibility after provider/model quota and availability constraints.
+
+---
+
 # Day 4 — End-to-End Product Flow
+
+## Checkpoint A — Native Camera Capture
+
+Implemented the browser-native camera screen at `/camera` using
+`navigator.mediaDevices.getUserMedia()` with an ideal rear-camera preference.
+The preview includes visual-only handwriting/page alignment guidance, a QR
+target guide, shutter control, and graceful torch support when the active track
+reports that capability.
+
+Capture uses the video's intrinsic `videoWidth` and `videoHeight`, writes a
+JPEG Blob at quality `0.92`, and shows a local preview without uploading it.
+Streams are stopped on capture, retake, and unmount; preview object URLs are
+revoked when replaced or unmounted. Real camera permission, device, and mobile
+browser behavior still require manual verification.
+
+## Checkpoint B — Submit and Render Grading
+
+Connected the captured JPEG Blob to `POST /api/upload` using `FormData` with
+the seeded lesson and student identifiers. The camera screen now has explicit
+captured, submitting, result, and error states, renders the backend score and
+per-word results, and shows incorrect expected words as visual red correction
+annotations around the unchanged image.
+
+Structured retryable API errors display the backend's friendly saved-submission
+message. The UI does not retry the same saved submission; the user starts a new
+attempt by retaking the image.
+
+## Screen 2 — Syllabus UI
+
+Implemented the syllabus screen from the technical-assignment mockup with a
+P1-P6 selector, expandable lesson cards, compact vocabulary display, and
+Pending Practice and Completed states. The lesson data is intentionally
+hardcoded during UI slicing, and the shared bottom navigation marks Syllabus
+as active.
+
+Refined the Dashboard and Syllabus top shell to use the shared
+`components/layout/app-header.tsx` component. Both screens now share the same
+welcome, notification, student context, and P2 badge treatment while keeping
+their page-specific content separate.
+
+## Checkpoint C — Basic Installable PWA Foundation
+
+Added the native Next.js App Router manifest with standalone display settings,
+application metadata, mobile viewport configuration, and local 192px/512px
+PNG icons. No service worker or offline caching was added; the grading flow
+depends on live camera, backend, Storage, and AI services. Manifest and icon
+installability still require manual browser/device verification.
 
 **Date:** September 4, 2026
 
