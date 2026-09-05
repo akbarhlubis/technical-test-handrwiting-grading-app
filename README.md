@@ -232,3 +232,20 @@ The development workflow was:
 ChatGPT was used for requirement analysis, technical research assistance, architecture discussion, trade-off analysis, implementation review, and challenging assumptions. Codex was used for codebase exploration, scoped implementation assistance, refactoring, repetitive development work, and testing assistance.
 
 Official documentation and technical references were consulted when unfamiliar or important framework and provider behavior required validation. AI-generated code and suggestions were treated as proposals, not automatically accepted solutions. The developer remained responsible for engineering decisions, understanding the architecture, reviewing code, manual verification, testing, and the final submission.
+
+## Engineering Documentation
+
+- [Development Log](docs/DEVLOG.md) - day-by-day implementation progress, debugging notes, testing, and final engineering reflections.
+- [Architecture & Engineering Decisions](docs/DECISIONS.md) - key technical decisions, alternatives, trade-offs, and rationale.
+
+    README
+        |
+    final implementation overview
+
+    DEVLOG
+        |
+    how the implementation evolved
+
+    DECISIONS
+        |
+    why important engineering decisions were made
